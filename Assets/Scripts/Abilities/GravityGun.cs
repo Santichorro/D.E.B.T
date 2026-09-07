@@ -16,19 +16,77 @@ public class GravityGun : MonoBehaviour
     public float pullForce = 20f;
     public LineRenderer cableRenderer;
 
+    [Header("Aim Visual")]
+    [Tooltip("El objeto visual (ej. un círculo/sprite) que se mueve al punto exacto de apuntado.")]
+    public Transform aimReticle;
+    [Tooltip("Distancia MÁXIMA a la que puede llegar el reticle con el stick al fondo. Con el mouse no aplica: ahí el reticle sigue la posición real del cursor.")]
+    public float maxAimDistance = 6f;
+
+    [Header("Colores por jugador")]
+    [Tooltip("Índice 0 = Player1, 1 = Player2, etc. Debe tener al menos 4 colores.")]
+    public Color[] playerColors = new Color[]
+    {
+        Color.cyan,
+        Color.yellow,
+        Color.green,
+        Color.magenta
+    };
+
     private PlayerPhysics myPhysics;
-    private GravityHook currentHook;
+    private Rigidbody myRigidbody;
+    private GravityHook activeHook;
     private NIS inputActions;
     private PlayerInput playerInput;
     private Vector2 aimInput;
-
     private Camera sharedCamera;
+    private Vector3 lastAimDirection = Vector3.right;
+    private Vector3 currentAimPoint;
+    private Renderer aimReticleRenderer;
+
+    public Vector3 AimPoint => currentAimPoint;
+    public Transform Muzzle => muzzle;
 
     private void Awake()
     {
         myPhysics = GetComponent<PlayerPhysics>();
+        myRigidbody = GetComponent<Rigidbody>();
         playerInput = GetComponent<PlayerInput>();
-        sharedCamera = Camera.main;
+
+        sharedCamera = aimCamera != null ? aimCamera : Camera.main;
+
+        if (muzzle != null)
+            currentAimPoint = muzzle.position + lastAimDirection * maxAimDistance;
+    }
+
+    private void Start()
+    {
+        ApplyPlayerColor();
+    }
+
+    private void ApplyPlayerColor()
+    {
+        int index = playerInput.playerIndex;
+        Color color = (index >= 0 && index < playerColors.Length)
+            ? playerColors[index]
+            : Color.white;
+
+        if (aimReticle != null)
+        {
+            aimReticleRenderer = aimReticle.GetComponent<Renderer>();
+            if (aimReticleRenderer != null)
+            {
+                MaterialPropertyBlock propBlock = new MaterialPropertyBlock();
+                aimReticleRenderer.GetPropertyBlock(propBlock);
+                propBlock.SetColor("_BaseColor", color);
+                aimReticleRenderer.SetPropertyBlock(propBlock);
+            }
+        }
+
+        if (cableRenderer != null)
+        {
+            cableRenderer.startColor = color;
+            cableRenderer.endColor = color;
+        }
     }
 
     private void OnEnable()
@@ -37,7 +95,8 @@ public class GravityGun : MonoBehaviour
         inputActions.devices = playerInput.devices;
         inputActions.Player.Enable();
 
-        inputActions.Player.GravityGun.performed += OnFirePressed;
+        inputActions.Player.GravityGun.started += OnFireStarted;
+        inputActions.Player.GravityGun.canceled += OnFireCanceled;
 
         inputActions.Player.Aim.performed += OnAim;
         inputActions.Player.Aim.canceled += OnAim;
@@ -45,10 +104,23 @@ public class GravityGun : MonoBehaviour
 
     private void OnDisable()
     {
-        inputActions.Player.GravityGun.performed -= OnFirePressed;
+        inputActions.Player.GravityGun.started -= OnFireStarted;
+        inputActions.Player.GravityGun.canceled -= OnFireCanceled;
         inputActions.Player.Aim.performed -= OnAim;
         inputActions.Player.Aim.canceled -= OnAim;
         inputActions.Player.Disable();
+    }
+
+    private void OnFireStarted(InputAction.CallbackContext ctx)
+    {
+        if (activeHook == null)
+            Fire();
+    }
+
+    private void OnFireCanceled(InputAction.CallbackContext ctx)
+    {
+        if (activeHook != null)
+            activeHook.BeginReturn();
     }
 
     private void OnAim(InputAction.CallbackContext ctx)
@@ -56,86 +128,123 @@ public class GravityGun : MonoBehaviour
         aimInput = ctx.ReadValue<Vector2>();
     }
 
-    private void OnFirePressed(InputAction.CallbackContext ctx)
+    private void Update()
     {
-        if (currentHook != null) Release();
-        else Fire();
+        GetAimDirection();
+
+        if (aimReticle != null)
+            aimReticle.position = currentAimPoint;
     }
 
     private void Fire()
     {
         Vector3 dir = GetAimDirection();
         GravityHook hook = Instantiate(hookPrefab, muzzle.position, Quaternion.identity);
-        hook.Init(this, dir);
+        hook.Init(this, myRigidbody, dir);
+        activeHook = hook;
     }
 
-    /// <summary>
-    /// Calcula la dirección de disparo según el dispositivo activo:
-    /// - Mouse: aimInput es una posición de pantalla, se proyecta al plano del jugador.
-    /// - Gamepad: aimInput ya es una dirección (-1..1), se usa directo.
-    /// </summary>
     private Vector3 GetAimDirection()
     {
-        bool usandoMouse = playerInput.currentControlScheme == "Keyboard_Mouse";
+        bool usandoMouse = playerInput.currentControlScheme == "Teclado_Mouse";
 
         if (usandoMouse)
         {
             Ray ray = sharedCamera.ScreenPointToRay(aimInput);
-            Plane plane = new Plane(Vector3.forward, new Vector3(0f, 0f, transform.position.z));
+            Plane plane = new Plane(Vector3.forward, new Vector3(0f, 0f, muzzle.position.z));
 
             if (plane.Raycast(ray, out float dist))
             {
                 Vector3 worldPoint = ray.GetPoint(dist);
                 Vector3 dir = worldPoint - muzzle.position;
                 dir.z = 0f;
-                if (dir.sqrMagnitude > 0.01f) return dir.normalized;
+                if (dir.sqrMagnitude > 0.01f)
+                {
+                    lastAimDirection = dir.normalized;
+                    worldPoint.z = muzzle.position.z;
+                    currentAimPoint = worldPoint;
+                    return lastAimDirection;
+                }
             }
-            return transform.right;
         }
         else
         {
-            if (aimInput.sqrMagnitude < 0.01f) return transform.right;
-            return new Vector3(aimInput.x, aimInput.y, 0f).normalized;
+            if (aimInput.sqrMagnitude > 0.01f)
+            {
+                Vector3 camRight = sharedCamera.transform.right;
+                Vector3 camUp = sharedCamera.transform.up;
+                camRight.z = 0f;
+                camUp.z = 0f;
+
+                Vector3 rawDir = (camRight.normalized * aimInput.x) + (camUp.normalized * aimInput.y);
+                if (rawDir.sqrMagnitude > 0.01f)
+                {
+                    lastAimDirection = rawDir.normalized;
+
+                    float stickStrength = Mathf.Clamp01(aimInput.magnitude);
+                    float distance = stickStrength * maxAimDistance;
+
+                    currentAimPoint = muzzle.position + lastAimDirection * distance;
+                    return lastAimDirection;
+                }
+            }
         }
+
+        return lastAimDirection;
     }
 
-    public void OnHookAttached(GravityHook hook) => currentHook = hook;
+    public void OnHookAttached(GravityHook hook) { }
 
-    private void Release()
+    public void OnHookReturned(GravityHook hook)
     {
-        if (currentHook != null)
-        {
-            Destroy(currentHook.gameObject);
-            currentHook = null;
-        }
-        if (cableRenderer != null) cableRenderer.enabled = false;
+        if (activeHook == hook)
+            activeHook = null;
+
+        if (cableRenderer != null)
+            cableRenderer.enabled = false;
     }
 
     private void FixedUpdate()
     {
-        if (currentHook == null) return;
-
-        Vector3 attachWorldPos = currentHook.TargetRb.transform.TransformPoint(currentHook.LocalAttachPoint);
-        Vector3 toPlayer = transform.position - attachWorldPos;
-        float distance = toPlayer.magnitude;
-
-        if (distance > ropeLength)
+        if (activeHook == null)
         {
-            Vector3 force = toPlayer.normalized * pullForce;
-
-            if (currentHook.TargetPhysics != null)
-                currentHook.TargetPhysics.ApplyForce(force);
-            else
-                currentHook.TargetRb.AddForce(force, ForceMode.Force);
+            if (cableRenderer != null) cableRenderer.enabled = false;
+            return;
         }
 
-        UpdateCableVisual(attachWorldPos);
+        Vector3 targetPoint;
+
+        if (activeHook.State == GravityHook.HookState.Attached)
+        {
+            Vector3 attachWorldPos = activeHook.transform.position;
+            Vector3 toPlayer = transform.position - attachWorldPos;
+            float distance = toPlayer.magnitude;
+
+            if (distance > ropeLength)
+            {
+                Vector3 force = toPlayer.normalized * pullForce;
+
+                if (activeHook.TargetPhysics != null)
+                    activeHook.TargetPhysics.ApplyForce(force);
+                else
+                    activeHook.TargetRb.AddForce(force, ForceMode.Force);
+            }
+
+            targetPoint = attachWorldPos;
+        }
+        else
+        {
+            targetPoint = activeHook.transform.position;
+        }
+
+        UpdateCableVisual(targetPoint);
     }
 
     private void UpdateCableVisual(Vector3 attachPoint)
     {
         if (cableRenderer == null) return;
         cableRenderer.enabled = true;
+        cableRenderer.positionCount = 2;
         cableRenderer.SetPosition(0, muzzle.position);
         cableRenderer.SetPosition(1, attachPoint);
     }
