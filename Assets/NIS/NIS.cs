@@ -116,7 +116,7 @@ public partial class @NIS: IInputActionCollection2, IDisposable
                     ""id"": ""7006b6a6-6223-4c21-a973-9e6d0343bbbc"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": ""Hold(duration=0.05)"",
                     ""initialStateCheck"": false
                 },
                 {
