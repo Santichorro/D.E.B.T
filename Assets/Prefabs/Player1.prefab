@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2843606634325926887}
   - component: {fileID: 5033061369388560035}
   - component: {fileID: 3671311660977808340}
+  - component: {fileID: -3707203775738228579}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Untagged
@@ -126,7 +127,7 @@ Rigidbody:
   m_GameObject: {fileID: 1298700251205473784}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 1
+  m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -206,8 +207,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c82e063ae04ce364daf25a15a94fede3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  thrustForce: 15
-  maxSpeed: 3
+  thrustForce: 10
   rotationSpeed: 360
   minSpeedToRotate: 0.15
   anguloOffset: -90
+--- !u!114 &-3707203775738228579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298700251205473784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab207b38cc202854ca31800f6f153072, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPhysics
+  maxSpeed: 3
+  deceleration: 1
+  stopThreshold: 0.05

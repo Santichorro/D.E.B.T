@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PlayerPhysics))]
 [RequireComponent(typeof(PlayerInput))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Movimiento (fuerzas)")]
     public float thrustForce = 15f;
-    public float maxSpeed = 8f;
 
     [Header("Rotación hacia el movimiento")]
     public float rotationSpeed = 360f;
@@ -15,13 +15,15 @@ public class PlayerController : MonoBehaviour
     public float anguloOffset = -90f;
 
     private Rigidbody rb;
+    private PlayerPhysics forceReceiver;
     private Vector2 moveInput;
     private NIS inputActions;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
+        forceReceiver = GetComponent<PlayerPhysics>();
+
         rb.constraints = RigidbodyConstraints.FreezePositionZ
                         | RigidbodyConstraints.FreezeRotationX
                         | RigidbodyConstraints.FreezeRotationY;
@@ -57,12 +59,16 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 inputDir = new Vector3(moveInput.x, moveInput.y, 0f);
-        rb.AddForce(inputDir * thrustForce, ForceMode.Force);
-        rb.linearVelocity = Vector3.ClampMagnitude(rb.linearVelocity, maxSpeed);
 
-        if (rb.linearVelocity.magnitude > minSpeedToRotate)
+        if (inputDir.sqrMagnitude > 0.01f)
         {
-            float angle = Mathf.Atan2(rb.linearVelocity.y, rb.linearVelocity.x) * Mathf.Rad2Deg;
+            forceReceiver.ApplyForce(inputDir * thrustForce);
+        }
+
+        Vector3 vel = forceReceiver.CurrentVelocity;
+        if (vel.magnitude > minSpeedToRotate)
+        {
+            float angle = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
             Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle + anguloOffset);
             rb.MoveRotation(Quaternion.RotateTowards(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
         }
