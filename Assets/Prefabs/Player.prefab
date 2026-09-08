@@ -721,7 +721,7 @@ MonoBehaviour:
   energyRechargeRate: 30
   minEnergyToFire: 10
   aimReticle: {fileID: 2950600880919440188}
-  maxAimDistance: 15
+  maxAimDistance: 4
   playerColors:
   - {r: 0, g: 1, b: 1, a: 1}
   - {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

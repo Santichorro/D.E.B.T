@@ -49,9 +49,10 @@ public class RespawnSystem : MonoBehaviour
             transform.rotation = respawnPoint.rotation;
         }
 
-        rb.linearVelocity = Vector3.zero;
         health.ResetHealth();
         SetActiveState(true);
+
+        rb.linearVelocity = Vector3.zero;
     }
 
     private void SetActiveState(bool active)
