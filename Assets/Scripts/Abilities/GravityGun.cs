@@ -243,6 +243,18 @@ public class GravityGun : MonoBehaviour
             cableRenderer.enabled = false;
     }
 
+    public void ForceReleaseHook()
+    {
+        if (activeHook != null)
+        {
+            activeHook.ForceRelease();
+            activeHook = null;
+
+            if (cableRenderer != null)
+                cableRenderer.enabled = false;
+        }
+    }
+
     private void FixedUpdate()
     {
         if (activeHook == null)

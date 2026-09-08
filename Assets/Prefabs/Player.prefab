@@ -483,6 +483,8 @@ GameObject:
   - component: {fileID: 4911291901642977056}
   - component: {fileID: 5946638140302644130}
   - component: {fileID: 2256552995167604919}
+  - component: {fileID: 1794662658452430602}
+  - component: {fileID: -7488568283903570262}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -694,7 +696,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPhysics
   maxSpeed: 3
-  deceleration: 2
+  deceleration: 1
   stopThreshold: 0.05
 --- !u!114 &5946638140302644130
 MonoBehaviour:
@@ -715,8 +717,8 @@ MonoBehaviour:
   pullForce: 15
   cableRenderer: {fileID: 2256552995167604919}
   maxEnergy: 100
-  energyDrainPerSecond: 20
-  energyRechargeRate: 15
+  energyDrainPerSecond: 15
+  energyRechargeRate: 30
   minEnergyToFire: 10
   aimReticle: {fileID: 2950600880919440188}
   maxAimDistance: 15
@@ -835,6 +837,33 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 0
+--- !u!114 &1794662658452430602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7866151229289544535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c09671e1ad98ed34d8fc0215240c6b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHealth: 100
+--- !u!114 &-7488568283903570262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7866151229289544535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 303033a5f6449aa41aa37e8d9aa72973, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RespawnSystem
+  respawnCooldown: 3
+  respawnPoint: {fileID: 0}
 --- !u!1 &9097742893781982646
 GameObject:
   m_ObjectHideFlags: 0

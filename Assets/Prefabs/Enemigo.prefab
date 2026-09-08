@@ -155,8 +155,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab207b38cc202854ca31800f6f153072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPhysics
-  maxSpeed: 8
-  deceleration: 10
+  maxSpeed: 6
+  deceleration: 2
   stopThreshold: 0.05
 --- !u!114 &3378316296715923538
 MonoBehaviour:
@@ -185,5 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   moveForce: 2
   detectionRange: 10
-  collisionDamage: 10
+  collisionDamage: 15
   damageCooldown: 1
+  minImpactSpeed: 2
+  impactDamageMultiplier: 10

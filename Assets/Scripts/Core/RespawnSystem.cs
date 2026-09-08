@@ -12,6 +12,7 @@ public class RespawnSystem : MonoBehaviour
     private Health health;
     private PlayerController playerController;
     private PlayerPhysics physics;
+    private GravityGun gravityGun;
     private Rigidbody rb;
     private Renderer[] renderers;
     private Collider[] colliders;
@@ -21,6 +22,7 @@ public class RespawnSystem : MonoBehaviour
         health = GetComponent<Health>();
         playerController = GetComponent<PlayerController>();
         physics = GetComponent<PlayerPhysics>();
+        gravityGun = GetComponent<GravityGun>();
         rb = GetComponent<Rigidbody>();
         renderers = GetComponentsInChildren<Renderer>();
         colliders = GetComponentsInChildren<Collider>();
@@ -31,6 +33,7 @@ public class RespawnSystem : MonoBehaviour
 
     private void HandleDeath()
     {
+        gravityGun?.ForceReleaseHook();
         StartCoroutine(RespawnRoutine());
     }
 
@@ -55,6 +58,7 @@ public class RespawnSystem : MonoBehaviour
     {
         if (playerController != null) playerController.enabled = active;
         if (physics != null) physics.enabled = active;
+        if (gravityGun != null) gravityGun.enabled = active;
 
         rb.isKinematic = !active;
 
