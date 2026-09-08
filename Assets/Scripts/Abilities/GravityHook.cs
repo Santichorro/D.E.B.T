@@ -87,6 +87,10 @@ public class GravityHook : MonoBehaviour
 
         transform.SetParent(targetRb.transform, true);
 
+        EnemyController enemyCtrl = targetRb.GetComponent<EnemyController>();
+        if (enemyCtrl != null)
+            enemyCtrl.SetGrabbed(true);
+
         owner.OnHookAttached(this);
     }
 
@@ -96,6 +100,10 @@ public class GravityHook : MonoBehaviour
 
         if (State == HookState.Attached)
         {
+            EnemyController enemyCtrl = TargetRb.GetComponent<EnemyController>();
+            if (enemyCtrl != null)
+                enemyCtrl.SetGrabbed(false);
+
             transform.SetParent(null, true);
             rb.isKinematic = false;
             TargetRb = null;
@@ -104,5 +112,17 @@ public class GravityHook : MonoBehaviour
 
         State = HookState.Returning;
         timer = 0f;
+    }
+
+    public void ForceRelease()
+    {
+        if (State == HookState.Attached && TargetRb != null)
+        {
+            EnemyController enemyCtrl = TargetRb.GetComponent<EnemyController>();
+            if (enemyCtrl != null)
+                enemyCtrl.SetGrabbed(false);
+        }
+
+        Destroy(gameObject);
     }
 }

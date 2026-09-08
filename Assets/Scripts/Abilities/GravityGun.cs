@@ -16,6 +16,21 @@ public class GravityGun : MonoBehaviour
     public float pullForce = 20f;
     public LineRenderer cableRenderer;
 
+    [Header("Energía / Recarga")]
+    public float maxEnergy = 100f;
+    [Tooltip("Cuánta energía se consume por segundo mientras hay un gancho activo (volando, enganchado o regresando).")]
+    public float energyDrainPerSecond = 25f;
+    [Tooltip("Cuánta energía se recupera por segundo cuando NO hay gancho activo.")]
+    public float energyRechargeRate = 15f;
+    [Tooltip("Energía mínima requerida para poder disparar de nuevo.")]
+    public float minEnergyToFire = 10f;
+
+    private float currentEnergy;
+
+    public float CurrentEnergy => currentEnergy;
+    public float MaxEnergy => maxEnergy;
+    public float EnergyNormalized => currentEnergy / maxEnergy;
+
     [Header("Aim Visual")]
     [Tooltip("El objeto visual (ej. un círculo/sprite) que se mueve al punto exacto de apuntado.")]
     public Transform aimReticle;
@@ -56,6 +71,8 @@ public class GravityGun : MonoBehaviour
 
         if (muzzle != null)
             currentAimPoint = muzzle.position + lastAimDirection * maxAimDistance;
+
+        currentEnergy = maxEnergy;
     }
 
     private void Start()
@@ -113,7 +130,7 @@ public class GravityGun : MonoBehaviour
 
     private void OnFireStarted(InputAction.CallbackContext ctx)
     {
-        if (activeHook == null)
+        if (activeHook == null && currentEnergy >= minEnergyToFire)
             Fire();
     }
 
@@ -134,6 +151,28 @@ public class GravityGun : MonoBehaviour
 
         if (aimReticle != null)
             aimReticle.position = currentAimPoint;
+
+        UpdateEnergy();
+    }
+
+    private void UpdateEnergy()
+    {
+        if (activeHook != null)
+        {
+            currentEnergy -= energyDrainPerSecond * Time.deltaTime;
+
+            if (currentEnergy <= 0f)
+            {
+                currentEnergy = 0f;
+                activeHook.BeginReturn();
+            }
+        }
+        else
+        {
+            currentEnergy += energyRechargeRate * Time.deltaTime;
+        }
+
+        currentEnergy = Mathf.Clamp(currentEnergy, 0f, maxEnergy);
     }
 
     private void Fire()
@@ -204,6 +243,18 @@ public class GravityGun : MonoBehaviour
             cableRenderer.enabled = false;
     }
 
+    public void ForceReleaseHook()
+    {
+        if (activeHook != null)
+        {
+            activeHook.ForceRelease();
+            activeHook = null;
+
+            if (cableRenderer != null)
+                cableRenderer.enabled = false;
+        }
+    }
+
     private void FixedUpdate()
     {
         if (activeHook == null)
@@ -218,17 +269,13 @@ public class GravityGun : MonoBehaviour
         {
             Vector3 attachWorldPos = activeHook.transform.position;
             Vector3 toPlayer = transform.position - attachWorldPos;
-            float distance = toPlayer.magnitude;
 
-            if (distance > ropeLength)
-            {
-                Vector3 force = toPlayer.normalized * pullForce;
+            Vector3 force = toPlayer.normalized * pullForce;
 
-                if (activeHook.TargetPhysics != null)
-                    activeHook.TargetPhysics.ApplyForce(force);
-                else
-                    activeHook.TargetRb.AddForce(force, ForceMode.Force);
-            }
+            if (activeHook.TargetPhysics != null)
+                activeHook.TargetPhysics.ApplyForce(force);
+            else
+                activeHook.TargetRb.AddForce(force, ForceMode.Force);
 
             targetPoint = attachWorldPos;
         }
