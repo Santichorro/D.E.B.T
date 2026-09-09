@@ -485,6 +485,8 @@ GameObject:
   - component: {fileID: 2256552995167604919}
   - component: {fileID: 1794662658452430602}
   - component: {fileID: -7488568283903570262}
+  - component: {fileID: 7590919680975194663}
+  - component: {fileID: 6128851049903485939}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -864,6 +866,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RespawnSystem
   respawnCooldown: 3
   respawnPoint: {fileID: 0}
+--- !u!114 &7590919680975194663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7866151229289544535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cb245a8d2e92c44090ae129f0641b52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRoleController
+  abilityBindings:
+  - role: 3
+    abilityComponent: {fileID: 6128851049903485939}
+  - role: 1
+    abilityComponent: {fileID: 6128851049903485939}
+  - role: 2
+    abilityComponent: {fileID: 6128851049903485939}
+  - role: 3
+    abilityComponent: {fileID: 6128851049903485939}
+--- !u!114 &6128851049903485939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7866151229289544535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 883d5ce0ef8a3ed49995ba182754fcce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PulseAbility
+  radius: 5
+  damage: 30
+  impulseForce: 12
+  cooldown: 4
+  affectedLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  showGizmo: 1
 --- !u!1 &9097742893781982646
 GameObject:
   m_ObjectHideFlags: 0
