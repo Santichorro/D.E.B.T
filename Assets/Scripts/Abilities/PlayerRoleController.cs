@@ -6,9 +6,9 @@ using UnityEngine.InputSystem;
 public enum PlayerRole
 {
     Demoledor,
-    Piloto,
-    Artillero,
     Ingeniero,
+    Artillero,
+    Piloto,
 }
 
 [System.Serializable]

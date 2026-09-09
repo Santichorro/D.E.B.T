@@ -487,6 +487,7 @@ GameObject:
   - component: {fileID: -7488568283903570262}
   - component: {fileID: 7590919680975194663}
   - component: {fileID: 6128851049903485939}
+  - component: {fileID: 5853826892888558912}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -701,6 +702,7 @@ MonoBehaviour:
   maxSpeed: 3
   deceleration: 1
   stopThreshold: 0.05
+  anchorWarningLead: 1.5
 --- !u!114 &5946638140302644130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -883,11 +885,11 @@ MonoBehaviour:
   - role: 0
     abilityComponent: {fileID: 6128851049903485939}
   - role: 1
-    abilityComponent: {fileID: 6128851049903485939}
+    abilityComponent: {fileID: 5853826892888558912}
   - role: 2
-    abilityComponent: {fileID: 6128851049903485939}
+    abilityComponent: {fileID: 0}
   - role: 3
-    abilityComponent: {fileID: 6128851049903485939}
+    abilityComponent: {fileID: 0}
 --- !u!114 &6128851049903485939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -900,14 +902,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 883d5ce0ef8a3ed49995ba182754fcce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PulseAbility
-  radius: 2.16
+  radius: 2.69
   damage: 30
   impulseForce: 12
   cooldown: 4
   affectedLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 72
   showGizmo: 1
+  visiblePulseObject: {fileID: 1001043857407236740}
+  visualDuration: 1
+--- !u!114 &5853826892888558912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7866151229289544535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc9361a2ae741b0449af01a176299f65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnchorAbility
+  range: 8
+  anchorDuration: 3
+  cooldown: 6
+  anchorableLayers:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1 &9097742893781982646
 GameObject:
   m_ObjectHideFlags: 0
@@ -1005,7 +1027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2819157520735297950, guid: a1b979dae55255b4d8112533c556b6e1, type: 3}
       propertyPath: m_Name
-      value: Shield FX_ FREE_4
+      value: VisiblePulse
       objectReference: {fileID: 0}
     - target: {fileID: 2819157520735297950, guid: a1b979dae55255b4d8112533c556b6e1, type: 3}
       propertyPath: m_IsActive
@@ -1017,6 +1039,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1b979dae55255b4d8112533c556b6e1, type: 3}
+--- !u!1 &1001043857407236740 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2819157520735297950, guid: a1b979dae55255b4d8112533c556b6e1, type: 3}
+  m_PrefabInstance: {fileID: 3097285505043413786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2736466230480313145 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1081467853832822819, guid: a1b979dae55255b4d8112533c556b6e1, type: 3}
