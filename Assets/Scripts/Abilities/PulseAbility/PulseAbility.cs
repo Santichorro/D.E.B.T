@@ -38,6 +38,12 @@ public class PulseAbility : MonoBehaviour, IAbility
     public float Cooldown => cooldown;
     public bool IsReady => Time.time - lastActivationTime >= cooldown;
 
+    [Header("Visual")]
+    [SerializeField] private GameObject visiblePulseObject;
+    [SerializeField] private float visualDuration = 1f;
+
+private Coroutine visualRoutine;
+
     private void Awake()
     {
         physics = GetComponent<PlayerPhysics>();
@@ -63,6 +69,8 @@ public class PulseAbility : MonoBehaviour, IAbility
 
     private void OnAbilityInput(InputAction.CallbackContext ctx)
     {
+        Debug.Log("Ability input detectado"); // TEMPORAL
+
         // El Pulso es de área, así que la dirección no se usa; se pasa Vector3.zero
         // únicamente para cumplir con el contrato común de IAbility.
         Activate(physics, Vector3.zero);
@@ -70,11 +78,21 @@ public class PulseAbility : MonoBehaviour, IAbility
 
     public void Activate(PlayerPhysics casterPhysics, Vector3 direction)
     {
+        Debug.Log($"Activate llamado. IsReady={IsReady}"); 
         if (!IsReady) return;
 
         lastActivationTime = Time.time;
 
         Vector3 origin = casterPhysics.transform.position;
+        if (visiblePulseObject != null)
+        {
+        
+            if (visualRoutine != null)
+                StopCoroutine(visualRoutine);
+
+            visualRoutine = StartCoroutine(ShowVisualPulse());
+        }
+
         Collider[] hits = Physics.OverlapSphere(origin, radius, affectedLayers);
 
         foreach (var hit in hits)
@@ -113,5 +131,12 @@ public class PulseAbility : MonoBehaviour, IAbility
         if (!showGizmo) return;
         Gizmos.color = new Color(0.3f, 0.7f, 1f, 0.35f);
         Gizmos.DrawWireSphere(transform.position, radius);
+    }
+
+    private System.Collections.IEnumerator ShowVisualPulse()
+    {
+        visiblePulseObject.SetActive(true);
+        yield return new WaitForSeconds(visualDuration);
+        visiblePulseObject.SetActive(false);
     }
 }
