@@ -1,16 +1,30 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Health))]
 public class ShipHealth : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private Health health;
+
+    public event System.Action OnShipDestroyed;
+
+    private void Awake()
     {
-        
+        health = GetComponent<Health>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        
+        health.OnDeath += HandleShipDeath;
+    }
+
+    private void OnDisable()
+    {
+        health.OnDeath -= HandleShipDeath;
+    }
+
+    private void HandleShipDeath()
+    {
+        OnShipDestroyed?.Invoke();
+        Debug.Log("Nave destruida: el nivel debería reiniciarse aquí.");
     }
 }
