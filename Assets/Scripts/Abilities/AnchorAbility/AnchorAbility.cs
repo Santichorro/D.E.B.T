@@ -1,11 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Habilidad "Anclaje" del Ingeniero (punto 13). Reutiliza el aim ya calculado por
-/// GravityGun (Muzzle + AimPoint) en vez de duplicar la lógica de apuntado mouse/stick.
-/// No modifica GravityGun.cs.
-/// </summary>
+
 [RequireComponent(typeof(PlayerPhysics))]
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(GravityGun))]

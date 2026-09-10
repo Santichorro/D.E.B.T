@@ -60,6 +60,15 @@ public class GravityGun : MonoBehaviour
 
     public Vector3 AimPoint => currentAimPoint;
     public Transform Muzzle => muzzle;
+    
+    public bool HasAttachedTarget =>
+        activeHook != null && activeHook.State == GravityHook.HookState.Attached;
+
+    public PlayerPhysics AttachedTargetPhysics =>
+        HasAttachedTarget ? activeHook.TargetPhysics : null;
+
+    public Rigidbody AttachedTargetRb =>
+        HasAttachedTarget ? activeHook.TargetRb : null;
 
     private void Awake()
     {

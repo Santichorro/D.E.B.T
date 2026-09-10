@@ -13,16 +13,20 @@ public class PlayerPhysics : MonoBehaviour, IAnchorable
     [Tooltip("Segundos antes de que termine el anclaje en los que se debería avisar (señal sonora u otra) de que está por soltarse.")]
     [SerializeField] private float anchorWarningLead = 1.5f;
 
-    /// <summary>
-    /// Se dispara cuando falta 'anchorWarningLead' segundos para que termine el anclaje.
-    /// Pensado para que un script de audio (aún no implementado) se suscriba sin que
-    /// PlayerPhysics necesite saber nada sobre AudioSource.
-    /// </summary>
+    // NUEVO: ventana de gracia tras un impulso externo (empuje/knockback).
+    [Header("Impulso externo")]
+    [Tooltip("Segundos tras un ApplyImpulse durante los que se ignora el clamp de maxSpeed y la desaceleración automática, para que el empuje realmente se sienta.")]
+    [SerializeField] private float impulseGraceDuration = 0.3f;
+
+
     public event System.Action OnAnchorAboutToEnd;
 
     private Rigidbody rb;
     private Vector3 pendingForce;
     private bool forceAppliedThisFrame;
+
+    // NUEVO: marca de tiempo hasta la que dura la ventana de gracia del último impulso.
+    private float impulseActiveUntil = -999f;
 
     // --- Anclaje (IAnchorable) ---
     private Vector3 preAnchorVelocity;
@@ -47,6 +51,11 @@ public class PlayerPhysics : MonoBehaviour, IAnchorable
     public void ApplyImpulse(Vector3 impulse)
     {
         if (IsAnchored) return;
+
+        // NUEVO: abre la ventana de gracia para que FixedUpdate no frene/clampee
+        // este impulso en el mismo frame o el siguiente.
+        impulseActiveUntil = Time.time + impulseGraceDuration;
+
         rb.AddForce(impulse, ForceMode.Impulse);
     }
 
@@ -62,21 +71,27 @@ public class PlayerPhysics : MonoBehaviour, IAnchorable
             return;
         }
 
+        // NUEVO: mientras dure la ventana de gracia de un impulso, se suspenden
+        // el clamp de maxSpeed y la desaceleración automática. El input normal
+        // del jugador (ApplyForce) sigue funcionando igual durante este rato.
+        bool impulseGraceActive = Time.time < impulseActiveUntil;
+
         if (forceAppliedThisFrame)
         {
             rb.AddForce(pendingForce, ForceMode.Force);
         }
-        else if (rb.linearVelocity.magnitude > stopThreshold)
+        else if (!impulseGraceActive && rb.linearVelocity.magnitude > stopThreshold)
         {
             Vector3 decelForce = -rb.linearVelocity.normalized * deceleration;
             rb.AddForce(decelForce, ForceMode.Acceleration);
         }
-        else if (rb.linearVelocity.magnitude <= stopThreshold)
+        else if (!impulseGraceActive && rb.linearVelocity.magnitude <= stopThreshold)
         {
             rb.linearVelocity = Vector3.zero;
         }
 
-        rb.linearVelocity = Vector3.ClampMagnitude(rb.linearVelocity, maxSpeed);
+        if (!impulseGraceActive)
+            rb.linearVelocity = Vector3.ClampMagnitude(rb.linearVelocity, maxSpeed);
 
         pendingForce = Vector3.zero;
         forceAppliedThisFrame = false;

@@ -1,21 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Habilidad "Pulso" del Demoledor (sección 4.5 del documento de mecánicas):
-/// genera un pulso de energía alrededor del jugador que afecta objetivos dentro de un radio,
-/// dañando/eliminando enemigos cercanos y pudiendo desactivar mecanismos.
-///
-/// El daño se aplica con una referencia directa a Health (GetComponent), sin interfaz
-/// IDamageable, para no requerir cambios en ese script. Para mecanismos que deban reaccionar
-/// sin recibir daño (puertas, dispositivos) se mantiene IPulseReactive como interfaz opt-in,
-/// ya que esa sí es una interfaz nueva y no toca ningún script existente.
-///
-/// Convive en el mismo GameObject (Player1) que las demás habilidades. El PlayerRoleController
-/// solo habilita este componente si el rol asignado es Demoledor; al estar deshabilitado,
-/// OnDisable() se encarga de dejar de escuchar el input, así que no requiere lógica extra
-/// de "¿soy yo el rol activo?" aquí dentro.
-/// </summary>
+
 [RequireComponent(typeof(PlayerPhysics))]
 [RequireComponent(typeof(PlayerInput))]
 public class PulseAbility : MonoBehaviour, IAbility
