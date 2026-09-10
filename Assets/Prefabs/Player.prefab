@@ -579,6 +579,7 @@ GameObject:
   - component: {fileID: 7912250066361419191}
   - component: {fileID: 1797168195193372449}
   - component: {fileID: 7648332161954765149}
+  - component: {fileID: 456728686186493043}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -1028,6 +1029,18 @@ MonoBehaviour:
   deathEffectPrefab: {fileID: 4674850917338782727, guid: 2aee2b8b91afbfd4baa318d5e6a9a45e, type: 3}
   destroyOnDeath: 1
   destroyDelay: 0.05
+--- !u!114 &456728686186493043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7866151229289544535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03a538b2c1b45d446b1e29ba7df9a26e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable
 --- !u!1 &9097742893781982646
 GameObject:
   m_ObjectHideFlags: 0
