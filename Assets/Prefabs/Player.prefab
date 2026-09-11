@@ -947,7 +947,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 72
   showGizmo: 1
-  visiblePulseObject: {fileID: 1001043857407236740}
+  visiblePulseObject: {fileID: 2958126713141920985, guid: f3df8a4a8cfb4ff46b0697dcda42f7a1, type: 3}
   visualDuration: 1
 --- !u!114 &5853826892888558912
 MonoBehaviour:
@@ -1154,11 +1154,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1b979dae55255b4d8112533c556b6e1, type: 3}
---- !u!1 &1001043857407236740 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2819157520735297950, guid: a1b979dae55255b4d8112533c556b6e1, type: 3}
-  m_PrefabInstance: {fileID: 3097285505043413786}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2736466230480313145 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1081467853832822819, guid: a1b979dae55255b4d8112533c556b6e1, type: 3}
