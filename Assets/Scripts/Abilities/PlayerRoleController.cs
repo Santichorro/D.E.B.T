@@ -31,11 +31,9 @@ public class PlayerRoleController : MonoBehaviour
     public PlayerRole AssignedRole { get; private set; }
     public bool HasRole { get; private set; }
 
-    /// <summary>
-    /// La habilidad actualmente activa como IAbility, o null si no hay rol asignado
-    /// o el binding no tiene componente. Útil para UI (cooldown) sin conocer el tipo concreto.
-    /// </summary>
     public IAbility CurrentAbility { get; private set; }
+
+    public event Action<PlayerRole> OnRoleChanged;
 
     private PlayerInput playerInput;
     private NIS inputActions;
@@ -153,6 +151,8 @@ public class PlayerRoleController : MonoBehaviour
             if (isActive)
                 CurrentAbility = binding.Ability;
         }
+
+        OnRoleChanged?.Invoke(role);
     }
 
     public static void ResetAllRoles()
