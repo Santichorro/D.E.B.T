@@ -25,7 +25,9 @@ public class PropulsionAbility : MonoBehaviour, IAbility
     [Tooltip("Layers que cuentan como enemigo para el ataque de colisión, igual que affectedLayers en PushAbility.")]
     [SerializeField] private LayerMask enemyLayers;
 
-    /// <summary>Se dispara justo al propulsarse. Pensado para VFX/audio/cámara, desacoplado igual que OnAnchorAboutToEnd en PlayerPhysics.</summary>
+    [Header("Efecto visual")]
+    [SerializeField] private ParticleSystem propulsionEffect;
+
     public event Action OnPropelled;
 
     private PlayerPhysics physics;
@@ -48,9 +50,6 @@ public class PropulsionAbility : MonoBehaviour, IAbility
 
     private void OnEnable()
     {
-        // Mismo patrón que PushAbility/AnchorAbility: reutiliza los devices ya
-        // asignados a este PlayerInput para que la propulsión responda al mando/teclado
-        // correcto de este jugador específico.
         inputActions.devices = playerInput.devices;
 
         inputActions.Player.Enable();
@@ -68,20 +67,17 @@ public class PropulsionAbility : MonoBehaviour, IAbility
         Vector3 direction = aimSource.AimPoint - aimSource.Muzzle.position;
         direction.z = 0f;
 
-        // Fallback si el jugador aún no movió el aim en este frame.
         if (direction.sqrMagnitude < 0.0001f)
             direction = transform.right;
 
         Activate(physics, direction.normalized);
     }
 
-   
     public void Activate(PlayerPhysics casterPhysics, Vector3 direction)
     {
         if (!IsReady) return;
         lastActivationTime = Time.time;
 
-        // La propulsión es la fuerza CONTRARIA a la dirección de atracción/apuntado.
         Vector3 propulsionDir = -direction;
 
         casterPhysics.ApplyImpulse(propulsionDir * propulsionForce);
@@ -91,7 +87,18 @@ public class PropulsionAbility : MonoBehaviour, IAbility
 
         collisionWindowEndTime = Time.time + collisionAttackWindow;
 
+        PlayPropulsionEffect(direction);
+
         OnPropelled?.Invoke();
+    }
+
+    private void PlayPropulsionEffect(Vector3 direction)
+    {
+        if (propulsionEffect == null) return;
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        propulsionEffect.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        propulsionEffect.Play();
     }
 
     private void EnsureMinimumSpeedAlong(PlayerPhysics casterPhysics, Vector3 direction)
@@ -109,8 +116,6 @@ public class PropulsionAbility : MonoBehaviour, IAbility
         if (Time.time > collisionWindowEndTime) return;
         if (physics.CurrentVelocity.magnitude < minCollisionSpeed) return;
 
-        // Detección por layer (no por componente): igual criterio que affectedLayers
-        // en PushAbility. Cualquier collider en enemyLayers cuenta como objetivo.
         int colliderLayer = collision.collider.gameObject.layer;
         if ((enemyLayers.value & (1 << colliderLayer)) == 0) return;
 
@@ -118,6 +123,6 @@ public class PropulsionAbility : MonoBehaviour, IAbility
         if (enemyHealth != null)
             enemyHealth.TakeDamage(collisionDamage);
 
-        collisionWindowEndTime = -999f; // Un solo impacto por propulsión.
+        collisionWindowEndTime = -999f;
     }
 }

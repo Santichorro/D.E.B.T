@@ -19,6 +19,9 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveInput;
     private NIS inputActions;
 
+    public bool IsThrusting => moveInput.sqrMagnitude > 0.01f;
+    public Vector3 MoveDirection => new Vector3(moveInput.x, moveInput.y, 0f);
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
