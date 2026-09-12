@@ -60,7 +60,7 @@ public class GravityGun : MonoBehaviour
 
     public Vector3 AimPoint => currentAimPoint;
     public Transform Muzzle => muzzle;
-    
+
     public bool HasAttachedTarget =>
         activeHook != null && activeHook.State == GravityHook.HookState.Attached;
 
@@ -113,6 +113,14 @@ public class GravityGun : MonoBehaviour
             cableRenderer.startColor = color;
             cableRenderer.endColor = color;
         }
+    }
+
+    public Color GetAssignedColor()
+    {
+        int index = playerInput.playerIndex;
+        return (index >= 0 && index < playerColors.Length)
+            ? playerColors[index]
+            : Color.white;
     }
 
     private void OnEnable()
