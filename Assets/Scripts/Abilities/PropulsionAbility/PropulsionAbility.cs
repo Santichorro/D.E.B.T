@@ -12,6 +12,10 @@ public class PropulsionAbility : MonoBehaviour, IAbility
     [SerializeField] private float propulsionForce = 18f;
     [SerializeField] private float cooldown = 2.5f;
 
+    [Header("Cruce de agujero negro")]
+    [Tooltip("Tiempo durante el cual la propulsión ignora la repulsión del agujero negro.")]
+    [SerializeField, Min(0f)] private float blackHoleTraversalWindow = 2f;
+
     [Header("Velocidad mínima garantizada")]
     [Tooltip("Si es > 0, tras propulsarse se garantiza al menos esta velocidad en la dirección del impulso. Pensado para el agujero negro artificial (12.3), que requiere una velocidad mínima de cruce.")]
     [SerializeField] private float guaranteedMinSpeed = 10f;
@@ -81,6 +85,7 @@ public class PropulsionAbility : MonoBehaviour, IAbility
         Vector3 propulsionDir = -direction;
 
         casterPhysics.ApplyImpulse(propulsionDir * propulsionForce);
+        BlackHole.GrantRepulsionImmunity(casterPhysics, blackHoleTraversalWindow);
 
         if (guaranteedMinSpeed > 0f)
             EnsureMinimumSpeedAlong(casterPhysics, propulsionDir);

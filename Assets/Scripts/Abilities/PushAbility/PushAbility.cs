@@ -13,6 +13,10 @@ public class PushAbility : MonoBehaviour, IAbility
     [SerializeField] private float pushForce = 15f;
     [SerializeField] private float cooldown = 3f;
     [SerializeField] private LayerMask affectedLayers;
+
+    [Header("Cruce de agujero negro")]
+    [Tooltip("Tiempo durante el cual el jugador empujado ignora la repulsión del agujero negro.")]
+    [SerializeField, Min(0f)] private float blackHoleTraversalWindow = 2f;
     
 
     [Header("Debug")]
@@ -91,6 +95,7 @@ public class PushAbility : MonoBehaviour, IAbility
         if (target.TryGetComponent(out PlayerPhysics targetPhysics))
         {
             targetPhysics.ApplyImpulse(direction * pushForce);
+            BlackHole.GrantRepulsionImmunity(targetPhysics, blackHoleTraversalWindow);
             return;
         }
 
