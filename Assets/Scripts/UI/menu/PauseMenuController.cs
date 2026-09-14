@@ -11,7 +11,11 @@ public class PauseMenuController : MonoBehaviour
     [Header("Input")]
     [SerializeField] private InputActionReference pauseAction;
 
+    [Header("Sonido")]
+    [SerializeField] private AudioSource menuAudioSource;
+
     private bool isPaused = false;
+
 
     private void Awake()
     {
@@ -19,7 +23,10 @@ public class PauseMenuController : MonoBehaviour
 
         pauseMenuPanel.SetActive(false);
         characterInfoPanel.SetActive(false);
+
+        isPaused = false;
     }
+
 
     private void OnEnable()
     {
@@ -41,22 +48,30 @@ public class PauseMenuController : MonoBehaviour
 
     private void OnPausePressed(InputAction.CallbackContext context)
     {
-        TogglePause();
-    }
+        PlayMenuSound();
 
-    public void TogglePause()
-    {
         if (isPaused)
         {
-            Resume();
+            ClosePauseMenu();
         }
         else
         {
-            Pause();
+            OpenPauseMenu();
         }
     }
 
-    public void Pause()
+
+
+    private void PlayMenuSound()
+    {
+        if (menuAudioSource != null)
+        {
+            menuAudioSource.Play();
+        }
+    }
+
+
+    public void OpenPauseMenu()
     {
         isPaused = true;
 
@@ -66,7 +81,8 @@ public class PauseMenuController : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    public void Resume()
+
+    public void ClosePauseMenu()
     {
         isPaused = false;
 
@@ -76,20 +92,46 @@ public class PauseMenuController : MonoBehaviour
         Time.timeScale = 1f;
     }
 
+
+    public void Resume()
+    {
+        PlayMenuSound();
+
+        ClosePauseMenu();
+    }
+
+
     public void OpenCharacterInfo()
     {
+        PlayMenuSound();
+
         pauseMenuPanel.SetActive(false);
         characterInfoPanel.SetActive(true);
+
+        Time.timeScale = 0f;
     }
 
     public void BackToPauseMenu()
     {
+        PlayMenuSound();
+
         characterInfoPanel.SetActive(false);
         pauseMenuPanel.SetActive(true);
+
+        Time.timeScale = 0f;
     }
 
     public void Restart()
     {
+        StartCoroutine(RestartAfterSound());
+    }
+
+    private System.Collections.IEnumerator RestartAfterSound()
+    {
+        PlayMenuSound();
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
         Time.timeScale = 1f;
 
         SceneManager.LoadScene(
@@ -99,6 +141,15 @@ public class PauseMenuController : MonoBehaviour
 
     public void QuitGame()
     {
+        StartCoroutine(QuitAfterSound());
+    }
+
+    private System.Collections.IEnumerator QuitAfterSound()
+    {
+        PlayMenuSound();
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
         Time.timeScale = 1f;
 
         Application.Quit();
