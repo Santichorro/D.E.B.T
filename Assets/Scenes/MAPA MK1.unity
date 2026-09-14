@@ -6477,6 +6477,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c2f6f005fd3c7041836477f53cbebc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHUDSlot
+  borderOrBackground: {fileID: 899600880}
+  portraitImage: {fileID: 188740816}
+  roleNameText: {fileID: 1108004839}
+  healthFillImage: {fileID: 1010850814}
+  healthPercentText: {fileID: 1648715559}
+  deadPortraitAlpha: 0.35
 --- !u!114 &659519765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11155,6 +11161,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c2f6f005fd3c7041836477f53cbebc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHUDSlot
+  borderOrBackground: {fileID: 697428622}
+  portraitImage: {fileID: 658680556}
+  roleNameText: {fileID: 1301215302}
+  healthFillImage: {fileID: 592818441}
+  healthPercentText: {fileID: 21851492}
+  deadPortraitAlpha: 0.35
 --- !u!114 &1091114452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11248,6 +11260,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c2f6f005fd3c7041836477f53cbebc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHUDSlot
+  borderOrBackground: {fileID: 1554265698}
+  portraitImage: {fileID: 2072296444}
+  roleNameText: {fileID: 1452193821}
+  healthFillImage: {fileID: 1089273201}
+  healthPercentText: {fileID: 332914208}
+  deadPortraitAlpha: 0.35
 --- !u!114 &1093157246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16785,6 +16803,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db0ad224a9a73e143b08d962fc7069b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHUDManager
+  visualConfig: {fileID: 11400000, guid: dd028800722efc94e8c0cbc7e9ee2514, type: 2}
+  hudSlots:
+  - {fileID: 659519764}
+  - {fileID: 1093157245}
+  - {fileID: 1565008900}
+  - {fileID: 1091114451}
 --- !u!4 &1527719612
 Transform:
   m_ObjectHideFlags: 0
@@ -17399,6 +17423,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c2f6f005fd3c7041836477f53cbebc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHUDSlot
+  borderOrBackground: {fileID: 1807496198}
+  portraitImage: {fileID: 1638287828}
+  roleNameText: {fileID: 1712658567}
+  healthFillImage: {fileID: 1238919445}
+  healthPercentText: {fileID: 2071959918}
+  deadPortraitAlpha: 0.35
 --- !u!114 &1565008901
 MonoBehaviour:
   m_ObjectHideFlags: 0

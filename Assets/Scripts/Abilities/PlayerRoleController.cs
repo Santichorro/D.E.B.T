@@ -37,6 +37,9 @@ public class PlayerRoleController : MonoBehaviour
     /// </summary>
     public IAbility CurrentAbility { get; private set; }
 
+    /// <summary>Se dispara cada vez que el rol asignado cambia (por interact o al hacer join). Útil para refrescar UI sin que esta tenga que hacer polling.</summary>
+    public event Action<PlayerRole> OnRoleChanged;
+
     private PlayerInput playerInput;
     private NIS inputActions;
     private PlayerRoleController roleController;
@@ -153,6 +156,8 @@ public class PlayerRoleController : MonoBehaviour
             if (isActive)
                 CurrentAbility = binding.Ability;
         }
+
+        OnRoleChanged?.Invoke(role);
     }
 
     public static void ResetAllRoles()
