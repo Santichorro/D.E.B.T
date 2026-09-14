@@ -17231,6 +17231,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1527719612}
   - component: {fileID: 1527719611}
+  - component: {fileID: 756281904381205974}
   m_Layer: 0
   m_Name: PlayerHUDManager
   m_TagString: Untagged
@@ -17250,6 +17251,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db0ad224a9a73e143b08d962fc7069b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHUDManager
+  visualConfig: {fileID: 11400000, guid: dd028800722efc94e8c0cbc7e9ee2514, type: 2}
+  hudSlots:
+  - {fileID: 659519764}
+  - {fileID: 1093157245}
+  - {fileID: 1565008900}
+  - {fileID: 1091114451}
+--- !u!114 &756281904381205974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1527719610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f4aa6b709a6445faad5936b98fc7a20, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Mk2HudBindings
+  hudManager: {fileID: 1527719611}
   visualConfig: {fileID: 11400000, guid: dd028800722efc94e8c0cbc7e9ee2514, type: 2}
   hudSlots:
   - {fileID: 659519764}
