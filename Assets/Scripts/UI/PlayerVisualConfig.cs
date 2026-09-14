@@ -9,6 +9,7 @@ public class PlayerVisualConfig : ScriptableObject
         public PlayerRole role;
         public string displayName;
         public Sprite icon; // el PNG del personaje/rol
+        public Color roleColor = Color.white;
     }
 
     [Header("Colores por índice de jugador (0 = P1, 1 = P2, etc.)")]
@@ -38,5 +39,11 @@ public class PlayerVisualConfig : ScriptableObject
             if (rv.role == role) return rv;
         }
         return null;
+    }
+
+    public Color GetRoleColor(PlayerRole role)
+    {
+        RoleVisual visual = GetRoleVisual(role);
+        return visual != null ? visual.roleColor : Color.white;
     }
 }

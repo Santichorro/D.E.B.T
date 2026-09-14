@@ -11,10 +11,34 @@ public class EnergyBarUI : MonoBehaviour
     public Vector3 fixedWorldRotation = Vector3.zero;
 
     private GravityGun myGun;
+    private PlayerRoleController roleController;
 
     private void Awake()
     {
         myGun = GetComponentInParent<GravityGun>();
+        roleController = GetComponentInParent<PlayerRoleController>();
+    }
+
+    private void OnEnable()
+    {
+        if (roleController != null)
+            roleController.OnRoleChanged += OnRoleChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (roleController != null)
+            roleController.OnRoleChanged -= OnRoleChanged;
+    }
+
+    private void Start()
+    {
+        RefreshRoleColor();
+    }
+
+    private void OnRoleChanged(PlayerRole role)
+    {
+        RefreshRoleColor();
     }
 
     private void Update()
@@ -23,12 +47,12 @@ public class EnergyBarUI : MonoBehaviour
 
         slider.value = myGun.EnergyNormalized;
 
-        if (fillImage != null)
-        {
-            int index = myGun.GetComponent<UnityEngine.InputSystem.PlayerInput>().playerIndex;
-            if (index >= 0 && index < myGun.playerColors.Length)
-                fillImage.color = myGun.playerColors[index];
-        }
+    }
+
+    private void RefreshRoleColor()
+    {
+        if (fillImage != null && roleController != null && roleController.HasRole)
+            fillImage.color = roleController.AssignedRoleColor;
     }
 
     private void LateUpdate()

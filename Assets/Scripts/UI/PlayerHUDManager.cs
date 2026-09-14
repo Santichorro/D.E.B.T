@@ -147,16 +147,12 @@ public class PlayerHUDManager : MonoBehaviour
         }
 
 
-        Color color = visualConfig.GetColor(index);
-
-
         hudSlots[index].SetSlotVisible(true);
 
 
         hudSlots[index].Bind(
             roleController,
             health,
-            color,
             visualConfig
         );
 

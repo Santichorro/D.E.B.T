@@ -18,15 +18,19 @@ MonoBehaviour:
   - {r: 0, g: 1, b: 0, a: 1}
   - {r: 1, g: 0, b: 1, a: 1}
   roleVisuals:
-  - role: 0
+  - role: 3
     displayName: PILOTO
     icon: {fileID: 21300000, guid: ab84139b9b1eb94418a95263f4e1905c, type: 3}
+    roleColor: {r: 0, g: 1, b: 1, a: 1}
   - role: 1
     displayName: INGENIERO
     icon: {fileID: 21300000, guid: 23bbdf5aefa56214f92b28d18b79f3fb, type: 3}
+    roleColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   - role: 2
     displayName: ARTILLERO
     icon: {fileID: 21300000, guid: 46109371a9122d746bb3932c1bd4c614, type: 3}
-  - role: 3
+    roleColor: {r: 0, g: 1, b: 0, a: 1}
+  - role: 0
     displayName: DEMOLEDOR
     icon: {fileID: 21300000, guid: 325cf601e2fce2c4db3120e35df52bca, type: 3}
+    roleColor: {r: 1, g: 0, b: 1, a: 1}

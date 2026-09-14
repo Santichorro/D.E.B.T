@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 80197732571972343}
   - component: {fileID: 80197732570943953}
   - component: {fileID: 80197732575111855}
+  - component: {fileID: 6446609059643045157}
   m_Layer: 6
   m_Name: Door_Left_01
   m_TagString: Untagged
@@ -113,6 +114,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.7500012, y: 0.40800077, z: 3.499999}
   m_Center: {x: -1.6250011, y: -0.50000024, z: 1.7499998}
+--- !u!114 &6446609059643045157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80197732568906207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdbc5450bbb5e5d4eb1c32eb2436e3db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mechanism
+  disableDuration: 0.3
+  pulseHitEffect: {fileID: 1998067899636662685}
+  pulseHitEffectDuration: 1
 --- !u!1 &80197732568911819
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,6 +268,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5817936494183129079}
+  - component: {fileID: 756928341765432109}
   m_Layer: 6
   m_Name: PUERTAH
   m_TagString: Untagged
@@ -278,6 +295,51 @@ Transform:
   - {fileID: 1998067899636662686}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &756928341765432109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4732609615002773332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef5174558b49c7a4bb16040a934256f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
+  doorLeaves:
+  - {fileID: 7086262925511146492}
+  - {fileID: 80197732568616693}
+  linkedMechanisms:
+  - {fileID: 1676562673711448230}
+  - {fileID: 6446609059643045157}
+  openDistance: 5
+  duration: 1
+  smoothCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  closeWhenMechanismsReactivate: 1
 --- !u!1 &7086262925510851266
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,6 +482,7 @@ GameObject:
   - component: {fileID: 7086262925511981054}
   - component: {fileID: 7086262925513008344}
   - component: {fileID: 7086262925517234086}
+  - component: {fileID: 1676562673711448230}
   m_Layer: 6
   m_Name: Door_Left_01
   m_TagString: Untagged
@@ -521,6 +584,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.7500012, y: 0.40800077, z: 3.499999}
   m_Center: {x: -1.6250011, y: -0.50000024, z: 1.7499998}
+--- !u!114 &1676562673711448230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7086262925510855894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdbc5450bbb5e5d4eb1c32eb2436e3db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mechanism
+  disableDuration: 3
+  pulseHitEffect: {fileID: 9113274400983886344}
+  pulseHitEffectDuration: 1
 --- !u!1001 &1471623719685529518
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -529,6 +607,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5817936494183129079}
     m_Modifications:
+    - target: {fileID: 970584331535894404, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1141330257610427968, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
@@ -577,6 +659,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1141330259687333425, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
+      propertyPath: lengthInSec
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1141330259687333426, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
@@ -584,6 +670,10 @@ PrefabInstance:
     - target: {fileID: 1141330259687333427, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
       propertyPath: m_Name
       value: CFXR3 Hit Electric C (Air) (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141330259687333427, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3878995627917149193, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
       propertyPath: m_Materials.Array.size
@@ -598,6 +688,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
+--- !u!1 &1998067899636662685 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1141330259687333427, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
+  m_PrefabInstance: {fileID: 1471623719685529518}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1998067899636662686 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1141330259687333424, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
@@ -663,6 +758,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1141330259687333425, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
+      propertyPath: lengthInSec
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1141330259687333426, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
@@ -670,6 +769,10 @@ PrefabInstance:
     - target: {fileID: 1141330259687333427, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
       propertyPath: m_Name
       value: CFXR3 Hit Electric C (Air)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1141330259687333427, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3878995627917149193, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
       propertyPath: m_Materials.Array.size
@@ -684,6 +787,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
+--- !u!1 &9113274400983886344 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1141330259687333427, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
+  m_PrefabInstance: {fileID: 8191496980399092795}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9113274400983886347 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1141330259687333424, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}

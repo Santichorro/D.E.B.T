@@ -1,121 +1,169 @@
 using System.Collections;
 using UnityEngine;
 
-public class Door : MonoBehaviour, IPulseReactive
+public class Door : MonoBehaviour
 {
-    [Header("Posiciones (eje Y local)")]
-    [SerializeField] private float closedY = 0f;
-    [SerializeField] private float openY = 3f;
-    [SerializeField] private bool startsOpen = false;
+    [Header("Referencias")]
+    [Tooltip("Las dos hojas que se desplazan al abrir la puerta.")]
+    [SerializeField] private Transform[] doorLeaves;
 
-    [Header("Movimiento")]
+    [Tooltip("Mecanismos hijos que reciben el Pulso y controlan esta puerta.")]
+    [SerializeField] private Mechanism[] linkedMechanisms;
+
+    [Header("Movimiento local")]
+    [Tooltip("Distancia que cada hoja recorre hacia su eje local Z positivo al abrirse.")]
+    [SerializeField] private float openDistance = 3f;
     [SerializeField] private float duration = 1f;
-    [SerializeField] private AnimationCurve smoothCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+    [SerializeField] private AnimationCurve smoothCurve =
+        AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
-    [Header("Cierre autom·tico")]
-    [SerializeField] private bool autoClose = true;
-    [SerializeField] private float autoCloseDelay = 5f;
+    [Header("Al reactivarse el mecanismo")]
+    [Tooltip("Si est√° activo, la puerta vuelve a cerrarse cuando ning√∫n mecanismo hijo siga desactivado.")]
+    [SerializeField] private bool closeWhenMechanismsReactivate = true;
 
-    private bool isOpen;
+    private Vector3[] closedLocalPositions;
     private Coroutine moveRoutine;
-    private Coroutine autoCloseRoutine;
+    private bool isOpen;
 
     private void Awake()
     {
-        isOpen = startsOpen;
-        SetImmediatePosition(isOpen);
+        if (linkedMechanisms == null || linkedMechanisms.Length == 0)
+            linkedMechanisms = GetComponentsInChildren<Mechanism>();
+
+        closedLocalPositions = new Vector3[doorLeaves.Length];
+        for (int i = 0; i < doorLeaves.Length; i++)
+        {
+            if (doorLeaves[i] != null)
+                closedLocalPositions[i] = doorLeaves[i].localPosition;
+        }
+    }
+
+    private void OnEnable()
+    {
+        foreach (Mechanism mechanism in linkedMechanisms)
+        {
+            if (mechanism != null)
+                mechanism.OnDisabledStateChanged += HandleMechanismStateChanged;
+        }
+    }
+
+    private void Start()
+    {
+        RefreshStateFromMechanisms();
+    }
+
+    private void OnDisable()
+    {
+        foreach (Mechanism mechanism in linkedMechanisms)
+        {
+            if (mechanism != null)
+                mechanism.OnDisabledStateChanged -= HandleMechanismStateChanged;
+        }
+
+        if (moveRoutine != null)
+        {
+            StopCoroutine(moveRoutine);
+            moveRoutine = null;
+        }
+    }
+
+    private void HandleMechanismStateChanged(bool isDisabled)
+    {
+        RefreshStateFromMechanisms();
+    }
+
+    private void RefreshStateFromMechanisms()
+    {
+        if (AnyLinkedMechanismIsDisabled())
+            Open();
+        else if (closeWhenMechanismsReactivate)
+            Close();
+    }
+
+    private bool AnyLinkedMechanismIsDisabled()
+    {
+        foreach (Mechanism mechanism in linkedMechanisms)
+        {
+            if (mechanism != null && mechanism.IsDisabled)
+                return true;
+        }
+
+        return false;
     }
 
     public void Open()
     {
-        if (isOpen)
-        {
-            RestartAutoCloseTimer();
-            return;
-        }
+        if (isOpen) return;
 
         isOpen = true;
-        StartMove(openY);
-        RestartAutoCloseTimer();
+        StartMove(open: true);
     }
 
     public void Close()
     {
-        if (autoCloseRoutine != null)
-        {
-            StopCoroutine(autoCloseRoutine);
-            autoCloseRoutine = null;
-        }
-
         if (!isOpen) return;
+
         isOpen = false;
-        StartMove(closedY);
+        StartMove(open: false);
     }
 
-    public void Toggle()
-    {
-        if (isOpen) Close();
-        else Open();
-    }
-
-    // Se llama autom·ticamente desde PulseAbility cuando el pulso golpea este objeto,
-    // gracias a que PulseAbility busca IPulseReactive en cada hit del OverlapSphere.
-    public void OnPulseHit(Vector3 origin, float force)
-    {
-        Open();
-    }
-
-    private void RestartAutoCloseTimer()
-    {
-        if (!autoClose) return;
-
-        if (autoCloseRoutine != null)
-            StopCoroutine(autoCloseRoutine);
-
-        autoCloseRoutine = StartCoroutine(AutoCloseRoutine());
-    }
-
-    private IEnumerator AutoCloseRoutine()
-    {
-        yield return new WaitForSeconds(autoCloseDelay);
-        autoCloseRoutine = null;
-        Close();
-    }
-
-    private void StartMove(float targetY)
+    private void StartMove(bool open)
     {
         if (moveRoutine != null)
             StopCoroutine(moveRoutine);
 
-        moveRoutine = StartCoroutine(MoveRoutine(targetY));
+        moveRoutine = StartCoroutine(MoveRoutine(open));
     }
 
-    private IEnumerator MoveRoutine(float targetY)
+    private IEnumerator MoveRoutine(bool open)
     {
-        float startY = transform.localPosition.y;
-        float elapsed = 0f;
+        if (duration <= 0f)
+        {
+            SetImmediatePositions(open);
+            moveRoutine = null;
+            yield break;
+        }
 
+        Vector3[] startPositions = new Vector3[doorLeaves.Length];
+        Vector3[] targetPositions = new Vector3[doorLeaves.Length];
+
+        for (int i = 0; i < doorLeaves.Length; i++)
+        {
+            if (doorLeaves[i] == null) continue;
+
+            startPositions[i] = doorLeaves[i].localPosition;
+            targetPositions[i] = closedLocalPositions[i] +
+                (open ? Vector3.forward * openDistance : Vector3.zero);
+        }
+
+        float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = smoothCurve.Evaluate(Mathf.Clamp01(elapsed / duration));
 
-            Vector3 pos = transform.localPosition;
-            pos.y = Mathf.Lerp(startY, targetY, t);
-            transform.localPosition = pos;
+            for (int i = 0; i < doorLeaves.Length; i++)
+            {
+                if (doorLeaves[i] != null)
+                    doorLeaves[i].localPosition = Vector3.Lerp(
+                        startPositions[i], targetPositions[i], t);
+            }
 
             yield return null;
         }
 
-        Vector3 finalPos = transform.localPosition;
-        finalPos.y = targetY;
-        transform.localPosition = finalPos;
+        SetImmediatePositions(open);
+        moveRoutine = null;
     }
 
-    private void SetImmediatePosition(bool open)
+    private void SetImmediatePositions(bool open)
     {
-        Vector3 pos = transform.localPosition;
-        pos.y = open ? openY : closedY;
-        transform.localPosition = pos;
+        for (int i = 0; i < doorLeaves.Length; i++)
+        {
+            if (doorLeaves[i] == null) continue;
+
+            doorLeaves[i].localPosition = closedLocalPositions[i] +
+                (open ? Vector3.forward * openDistance : Vector3.zero);
+        }
     }
 }

@@ -29,7 +29,6 @@ public class PlayerHUDSlot : MonoBehaviour
     public void Bind(
         PlayerRoleController role,
         Health playerHealth,
-        Color playerColor,
         PlayerVisualConfig config)
     {
         // Por si el slot se reutiliza o Bind se llama más de una vez.
@@ -38,12 +37,6 @@ public class PlayerHUDSlot : MonoBehaviour
         roleController = role;
         health = playerHealth;
         visualConfig = config;
-
-        if (borderOrBackground != null)
-        {
-            borderOrBackground.color = playerColor;
-        }
-
 
         if (roleController != null)
         {
@@ -59,6 +52,7 @@ public class PlayerHUDSlot : MonoBehaviour
 
         // Actualizar inmediatamente la información.
         RefreshRoleVisual();
+        RefreshRoleColor();
         RefreshHealthVisual();
     }
 
@@ -88,6 +82,7 @@ public class PlayerHUDSlot : MonoBehaviour
     private void OnRoleChanged(PlayerRole newRole)
     {
         RefreshRoleVisual();
+        RefreshRoleColor();
     }
 
 
@@ -159,6 +154,15 @@ public class PlayerHUDSlot : MonoBehaviour
                 );
             }
         }
+    }
+
+    private void RefreshRoleColor()
+    {
+        if (borderOrBackground == null || roleController == null ||
+            !roleController.HasRole || visualConfig == null)
+            return;
+
+        borderOrBackground.color = visualConfig.GetRoleColor(roleController.AssignedRole);
     }
 
 

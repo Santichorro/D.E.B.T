@@ -5,10 +5,12 @@ using UnityEngine.InputSystem;
 
 public enum PlayerRole
 {
-    Piloto,
+    // El orden de esta lista define el orden de asignación y de cambio de rol.
+    // No reordenar sus miembros sin actualizar los assets serializados que usan PlayerRole.
+    Demoledor,
     Ingeniero,
     Artillero,
-    Demoledor,
+    Piloto
 }
 
 [System.Serializable]
@@ -25,11 +27,17 @@ public class RoleAbilityBinding
 public class PlayerRoleController : MonoBehaviour
 {
     [SerializeField] private RoleAbilityBinding[] abilityBindings;
+    [SerializeField] private PlayerVisualConfig visualConfig;
 
     private static readonly HashSet<PlayerRole> takenRoles = new HashSet<PlayerRole>();
+    private static readonly PlayerRole[] rolesInEnumOrder =
+        (PlayerRole[])Enum.GetValues(typeof(PlayerRole));
 
     public PlayerRole AssignedRole { get; private set; }
     public bool HasRole { get; private set; }
+    public Color AssignedRoleColor => HasRole && visualConfig != null
+        ? visualConfig.GetRoleColor(AssignedRole)
+        : Color.white;
 
     /// <summary>
     /// La habilidad actualmente activa como IAbility, o null si no hay rol asignado
@@ -43,6 +51,8 @@ public class PlayerRoleController : MonoBehaviour
     private PlayerInput playerInput;
     private NIS inputActions;
     private PlayerRoleController roleController;
+    private bool canCycleRoles;
+    private Coroutine enableRoleCyclingRoutine;
 
     private void Awake()
     {
@@ -70,10 +80,23 @@ public class PlayerRoleController : MonoBehaviour
         inputActions.Player.Interact.performed += OnInteractInput;
 
         AssignFirstAvailableRole();
+
+        // El botón que crea un PlayerInput también puede disparar Interact en este
+        // mismo frame. Esperar un frame evita que ese input de join cambie el rol
+        // recién asignado por el enum.
+        canCycleRoles = false;
+        enableRoleCyclingRoutine = StartCoroutine(EnableRoleCyclingNextFrame());
     }
 
     private void OnDisable()
     {
+        if (enableRoleCyclingRoutine != null)
+        {
+            StopCoroutine(enableRoleCyclingRoutine);
+            enableRoleCyclingRoutine = null;
+        }
+
+        canCycleRoles = false;
         inputActions.Player.Interact.performed -= OnInteractInput;
         inputActions.Player.Disable();
 
@@ -82,14 +105,23 @@ public class PlayerRoleController : MonoBehaviour
 
     private void OnInteractInput(InputAction.CallbackContext ctx)
     {
+        if (!canCycleRoles) return;
+
         CycleToNextRole();
+    }
+
+    private System.Collections.IEnumerator EnableRoleCyclingNextFrame()
+    {
+        yield return null;
+        canCycleRoles = true;
+        enableRoleCyclingRoutine = null;
     }
 
     private void AssignFirstAvailableRole()
     {
         if (HasRole) return;
 
-        foreach (PlayerRole role in Enum.GetValues(typeof(PlayerRole)))
+        foreach (PlayerRole role in rolesInEnumOrder)
         {
             if (TryAssignRole(role)) break;
         }
@@ -97,12 +129,16 @@ public class PlayerRoleController : MonoBehaviour
 
     public void CycleToNextRole()
     {
-        var roles = (PlayerRole[])Enum.GetValues(typeof(PlayerRole));
-        int startIndex = HasRole ? ((int)AssignedRole + 1) % roles.Length : 0;
+        int currentIndex = Array.IndexOf(rolesInEnumOrder, AssignedRole);
+        int startIndex = HasRole && currentIndex >= 0
+            ? (currentIndex + 1) % rolesInEnumOrder.Length
+            : 0;
 
-        for (int i = 0; i < roles.Length; i++)
+        for (int i = 0; i < rolesInEnumOrder.Length; i++)
         {
-            PlayerRole candidate = roles[(startIndex + i) % roles.Length];
+            PlayerRole candidate = rolesInEnumOrder[
+                (startIndex + i) % rolesInEnumOrder.Length
+            ];
             if (TryAssignRole(candidate)) return;
         }
     }

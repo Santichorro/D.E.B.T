@@ -1,26 +1,45 @@
 using UnityEngine;
 
-[RequireComponent(typeof(GravityGun))]
+[RequireComponent(typeof(PlayerRoleController))]
 public class PlayerSkinColorizer : MonoBehaviour
 {
     [Header("Partes de la skin")]
-    [Tooltip("Arrastra aquí los Renderers de las partes del cuerpo que deben teñirse con el color del jugador (torso, casco, detalles, etc). Deja fuera las partes que NO deben cambiar (ej: visor, piel).")]
+    [Tooltip("Arrastra aquÃ­ los Renderers de las partes del cuerpo que deben teÃ±irse con el color del jugador (torso, casco, detalles, etc). Deja fuera las partes que NO deben cambiar (ej: visor, piel).")]
     public Renderer[] skinParts;
 
-    private GravityGun gravityGun;
+    private PlayerRoleController roleController;
     private MaterialPropertyBlock propBlock;
 
     private void Awake()
     {
-        gravityGun = GetComponent<GravityGun>();
+        roleController = GetComponent<PlayerRoleController>();
         propBlock = new MaterialPropertyBlock();
+    }
+
+    private void OnEnable()
+    {
+        roleController.OnRoleChanged += OnRoleChanged;
+    }
+
+    private void OnDisable()
+    {
+        roleController.OnRoleChanged -= OnRoleChanged;
     }
 
     private void Start()
     {
-        // Se ejecuta después de que PlayerInput ya asignó el playerIndex real
-        // (al hacer join desde el lobby), así que el color siempre es el correcto.
-        ApplyColor(gravityGun.GetAssignedColor());
+        RefreshRoleColor();
+    }
+
+    private void OnRoleChanged(PlayerRole role)
+    {
+        RefreshRoleColor();
+    }
+
+    private void RefreshRoleColor()
+    {
+        if (roleController != null && roleController.HasRole)
+            ApplyColor(roleController.AssignedRoleColor);
     }
 
     public void ApplyColor(Color color)

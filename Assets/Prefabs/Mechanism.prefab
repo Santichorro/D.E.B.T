@@ -127,7 +127,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mechanism
   disableDuration: 0.3
-  visualToDisable: {fileID: 8179180609379247799}
+  pulseHitEffect: {fileID: 8179180609379247799}
+  pulseHitEffectDuration: 1
 --- !u!1001 &9103068693662890116
 PrefabInstance:
   m_ObjectHideFlags: 0
