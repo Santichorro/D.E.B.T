@@ -118,6 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d172b2f9327e34f42b743078246a6f07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitFeedback
+  healthSource: {fileID: 2808347459114923608}
   targetRenderer: {fileID: 6146414777132886682}
   shakeTransform: {fileID: 8937266513734282162}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
@@ -125,7 +126,7 @@ MonoBehaviour:
   shakeAmount: 0.1
   shakeDuration: 0.15
   deathEffectPrefab: {fileID: 4674850917338782727, guid: 2aee2b8b91afbfd4baa318d5e6a9a45e, type: 3}
-  destroyOnDeath: 1
+  destroyOnDeath: 0
   destroyDelay: 0.05
 --- !u!114 &6389522898512563070
 MonoBehaviour:

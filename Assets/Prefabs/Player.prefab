@@ -1100,7 +1100,7 @@ MonoBehaviour:
   shakeAmount: 0.1
   shakeDuration: 0.15
   deathEffectPrefab: {fileID: 4674850917338782727, guid: 2aee2b8b91afbfd4baa318d5e6a9a45e, type: 3}
-  destroyOnDeath: 1
+  destroyOnDeath: 0
   destroyDelay: 0.05
 --- !u!114 &456728686186493043
 MonoBehaviour:
