@@ -62,6 +62,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b70e83a925d96a54fb3f0533124b6a0b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8183706269257410394}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b70e83a925d96a54fb3f0533124b6a0b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -3196908831624440233}
   m_SourcePrefab: {fileID: 100100000, guid: b70e83a925d96a54fb3f0533124b6a0b, type: 3}
 --- !u!1 &3492860021104261954 stripped
 GameObject:
@@ -116,3 +119,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 56
   m_CollisionDetection: 0
+--- !u!114 &-3196908831624440233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3492860021104261954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50ac15ccbb83bd74b8b46d3c248c8de0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ValuableObject
+  monetaryValue: 75
+  canBeStored: 1
+  disableObjectAfterStorage: 1
