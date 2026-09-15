@@ -556,8 +556,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.03636451
-        value: 0.07545051
+        time: 0.044920877
+        value: 0.04670295
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -634,8 +634,8 @@ GameObject:
   - component: {fileID: 456728686186493043}
   - component: {fileID: 4685935289351972152}
   - component: {fileID: 1265289406065864039}
-  - component: {fileID: 991111001}
   - component: {fileID: 1820837232998003036}
+  - component: {fileID: 427988057011235578}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -1093,6 +1093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d172b2f9327e34f42b743078246a6f07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitFeedback
+  healthSource: {fileID: 0}
   targetRenderer: {fileID: 0}
   shakeTransform: {fileID: 0}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
@@ -1154,30 +1155,6 @@ MonoBehaviour:
   emissionSmoothSpeed: 10
   angleOffset: 0
   rotationSmoothSpeed: 200
---- !u!114 &991111001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7866151229289544535}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbda67595517bb049b1d68fa8640e94a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerShipLine
-  distanciaMaxima: 20
-  inicioTension: 10
-  fuerzaMinima: 18
-  fuerzaMaxima: 60
-  margenFreno: 2
-  impulsoMaximoDeFreno: 1.5
-  cableRenderer: {fileID: 8816996889393924426}
-  puntoOrigenJugador: {fileID: 0}
-  ocultarMientrasPilota: 1
-  ocultarSiEstaMuerto: 1
-  usarColorDeGravityGun: 1
-  colorFijo: {r: 0, g: 1, b: 1, a: 1}
 --- !u!82 &1820837232998003036
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1275,6 +1252,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &427988057011235578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7866151229289544535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbda67595517bb049b1d68fa8640e94a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerShipLine
+  naveTransform: {fileID: 0}
+  distanciaMaxima: 10
+  fuerzaTiron: 15
+  zonaDeTransicion: 5
+  tetherActivo: 1
+  cableRenderer: {fileID: 8816996889393924426}
+  anchorPointJugador: {fileID: 6858205040116212212}
+  usarColorDeGravityGun: 1
+  colorFijo: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &9097742893781982646
 GameObject:
   m_ObjectHideFlags: 0

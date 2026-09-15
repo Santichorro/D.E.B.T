@@ -1,178 +1,137 @@
 using UnityEngine;
 
-/// <summary>
-/// Cable individual entre un jugador y la nave activa. La nave se registra una
-/// sola vez desde ShipController; este componente no realiza búsquedas globales.
-/// </summary>
 [RequireComponent(typeof(PlayerPhysics))]
 public class PlayerShipLine : MonoBehaviour
 {
-    [Header("Restricción de distancia")]
-    [SerializeField, Min(0.1f)] private float distanciaMaxima = 25f;
-    [SerializeField, Min(0f)] private float inicioTension = 20f;
-    [SerializeField, Min(0f)] private float fuerzaMinima = 18f;
-    [SerializeField, Min(0f)] private float fuerzaMaxima = 60f;
-    [SerializeField, Min(0f)] private float margenFreno = 2f;
-    [SerializeField, Min(0f)] private float impulsoMaximoDeFreno = 1.5f;
+    [Header("Referencia a la nave")]
+    [Tooltip("Si lo dejás vacío, busca un objeto con tag 'Ship' al iniciar.")]
+    [SerializeField] private Transform naveTransform;
+
+    [Header("Configuración del tether")]
+    [SerializeField] private float distanciaMaxima = 25f;
+    [Tooltip("Fuerza de tirón una vez pasada la zona de transición.")]
+    [SerializeField] private float fuerzaTiron = 15f;
+    [Tooltip("Distancia extra después del límite en la que la fuerza sube gradualmente en vez de aplicarse de golpe.")]
+    [SerializeField] private float zonaDeTransicion = 5f;
+    [Tooltip("Mientras esté en false, no se aplica fuerza y el cable se oculta. Se controla desde afuera (ej. el script que maneja el pilotaje de la nave).")]
+    [SerializeField] private bool tetherActivo = true;
 
     [Header("Visual - Cable")]
+    [Tooltip("LineRenderer propio del tether. Se prende solo mientras se está tirando del jugador, no mientras está dentro del rango permitido.")]
     [SerializeField] private LineRenderer cableRenderer;
-    [Tooltip("Si queda vacío, el cable sale del transform raíz del jugador.")]
-    [SerializeField] private Transform puntoOrigenJugador;
-    [SerializeField] private bool ocultarMientrasPilota = true;
-    [SerializeField] private bool ocultarSiEstaMuerto = true;
-    [SerializeField] private bool usarColorDeGravityGun = true;
-    [SerializeField] private Color colorFijo = Color.cyan;
+    [Tooltip("Punto del jugador desde el que sale el cable (ej. la espalda o el centro). Si lo dejás vacío usa transform.position.")]
+    [SerializeField] private Transform anchorPointJugador;
+    [Tooltip("Color usado hasta que se asigne un rol, o si no hay PlayerRoleController en este objeto.")]
+    [SerializeField] private Color colorPorDefecto = Color.cyan;
 
     private PlayerPhysics playerPhysics;
-    private GravityGun gravityGun;
-    private Health health;
-    private ShipController nave;
-    private bool tetherActivo = true;
-
-    private Transform NaveTransform => nave != null ? nave.transform : null;
+    private PlayerRoleController roleController;
 
     private void Awake()
     {
         playerPhysics = GetComponent<PlayerPhysics>();
-        gravityGun = GetComponent<GravityGun>();
-        health = GetComponent<Health>();
-        AplicarColorCable();
-        MostrarCable(false);
+        roleController = GetComponent<PlayerRoleController>();
+
+        if (naveTransform == null)
+        {
+            GameObject nave = GameObject.FindGameObjectWithTag("Ship");
+            if (nave != null)
+            {
+                naveTransform = nave.transform;
+            }
+            else
+            {
+                Debug.LogWarning($"{name}: no se asignó 'naveTransform' ni se encontró un objeto con tag 'Ship'.");
+            }
+        }
+
+        if (cableRenderer != null)
+            cableRenderer.enabled = true;
     }
 
     private void OnEnable()
     {
-        ShipController.ActiveTetherShipChanged += OnActiveTetherShipChanged;
-        VincularNave(ShipController.ActiveTetherShip);
+        if (roleController != null)
+            roleController.OnRoleChanged += OnRoleChanged;
     }
 
     private void OnDisable()
     {
-        ShipController.ActiveTetherShipChanged -= OnActiveTetherShipChanged;
-        MostrarCable(false);
+        if (roleController != null)
+            roleController.OnRoleChanged -= OnRoleChanged;
     }
 
-    private void OnActiveTetherShipChanged(ShipController nuevaNave)
+    private void Start()
     {
-        VincularNave(nuevaNave);
+        RefreshRoleColor();
     }
 
-    private void VincularNave(ShipController nuevaNave)
+    private void OnRoleChanged(PlayerRole role)
     {
-        nave = nuevaNave;
-        ActualizarCable();
+        RefreshRoleColor();
     }
 
-    private void FixedUpdate()
+    private void RefreshRoleColor()
     {
-        if (!PuedeUsarTether() || playerPhysics == null || playerPhysics.IsAnchored)
-            return;
+        if (cableRenderer == null) return;
 
-        Vector3 desdeNave = transform.position - NaveTransform.position;
-        desdeNave.z = 0f;
-        float distancia = desdeNave.magnitude;
-
-        if (distancia <= inicioTension || distancia <= 0.0001f)
-            return;
-
-        Vector3 haciaNave = -desdeNave / distancia;
-        float limiteDeFuerza = Mathf.Max(distanciaMaxima, inicioTension + 0.01f);
-        float progreso = Mathf.InverseLerp(inicioTension, limiteDeFuerza, distancia);
-        float fuerza = Mathf.Lerp(fuerzaMinima, fuerzaMaxima, progreso);
-        playerPhysics.ApplyForce(haciaNave * fuerza);
-
-        // Si sigue alejándose mucho, frena únicamente su velocidad radial. No hay teletransporte.
-        if (distancia > distanciaMaxima + margenFreno && impulsoMaximoDeFreno > 0f)
-        {
-            Vector3 velocidad = playerPhysics.CurrentVelocity;
-            velocidad.z = 0f;
-            float velocidadHaciaFuera = Vector3.Dot(velocidad, -haciaNave);
-            if (velocidadHaciaFuera > 0f)
-                playerPhysics.ApplyImpulse(haciaNave * Mathf.Min(velocidadHaciaFuera, impulsoMaximoDeFreno));
-        }
-    }
-
-    private void LateUpdate()
-    {
-        ActualizarCable();
-    }
-
-    /// <summary>
-    /// Lo usa ShipController al entrar/salir del estado de pilotaje. En el flujo
-    /// actual, pilotear es el estado que representa estar dentro de la nave.
-    /// </summary>
-    public void SetTetherActivo(bool activo)
-    {
-        tetherActivo = activo;
-        ActualizarCable();
-    }
-
-    private bool PuedeUsarTether()
-    {
-        if (!tetherActivo || NaveTransform == null)
-            return false;
-
-        return !ocultarSiEstaMuerto || health == null || !health.IsDead;
-    }
-
-    private void ActualizarCable()
-    {
-        bool debeMostrarse = tetherActivo && NaveTransform != null &&
-                              (!ocultarSiEstaMuerto || health == null || !health.IsDead);
-
-        if (!debeMostrarse && !ocultarMientrasPilota && NaveTransform != null &&
-            (!ocultarSiEstaMuerto || health == null || !health.IsDead))
-        {
-            debeMostrarse = true;
-        }
-
-        MostrarCable(debeMostrarse);
-        if (!debeMostrarse || cableRenderer == null)
-            return;
-
-        cableRenderer.positionCount = 2;
-        cableRenderer.SetPosition(0, puntoOrigenJugador != null ? puntoOrigenJugador.position : transform.position);
-        cableRenderer.SetPosition(1, NaveTransform.position);
-    }
-
-    private void MostrarCable(bool mostrar)
-    {
-        if (cableRenderer != null && cableRenderer.enabled != mostrar)
-            cableRenderer.enabled = mostrar;
-    }
-
-    private void AplicarColorCable()
-    {
-        if (cableRenderer == null)
-            return;
-
-        Color color = usarColorDeGravityGun && gravityGun != null
-            ? gravityGun.GetAssignedColor()
-            : colorFijo;
+        Color color = (roleController != null && roleController.HasRole)
+            ? roleController.AssignedRoleColor
+            : colorPorDefecto;
 
         cableRenderer.startColor = color;
         cableRenderer.endColor = color;
     }
 
-    private void OnValidate()
+    private void FixedUpdate()
     {
-        distanciaMaxima = Mathf.Max(0.1f, distanciaMaxima);
-        inicioTension = Mathf.Clamp(inicioTension, 0f, distanciaMaxima);
-        fuerzaMinima = Mathf.Max(0f, fuerzaMinima);
-        fuerzaMaxima = Mathf.Max(fuerzaMinima, fuerzaMaxima);
-        margenFreno = Mathf.Max(0f, margenFreno);
-        impulsoMaximoDeFreno = Mathf.Max(0f, impulsoMaximoDeFreno);
+        if (naveTransform == null) return;
+
+        if (!tetherActivo)
+        {
+            if (cableRenderer != null) cableRenderer.enabled = false;
+            return;
+        }
+
+        DibujarCable();
+        if (playerPhysics.IsAnchored) return;
+
+        Vector3 desdeNave = transform.position - naveTransform.position;
+        float distancia = desdeNave.magnitude;
+
+        if (distancia <= distanciaMaxima) return;
+
+        Vector3 direccionHaciaNave = -desdeNave.normalized;
+        float exceso = distancia - distanciaMaxima;
+        float intensidad = Mathf.Clamp01(exceso / zonaDeTransicion);
+
+        playerPhysics.ApplyForce(direccionHaciaNave * fuerzaTiron * intensidad);
     }
 
+    public void SetTetherActivo(bool activo)
+    {
+        tetherActivo = activo;
+        if (!activo && cableRenderer != null)
+            cableRenderer.enabled = false;
+    }
+
+    private void DibujarCable()
+    {
+        if (cableRenderer == null) return;
+
+        cableRenderer.enabled = true;
+        cableRenderer.positionCount = 2;
+
+        Vector3 origen = anchorPointJugador != null ? anchorPointJugador.position : transform.position;
+        cableRenderer.SetPosition(0, origen);
+        cableRenderer.SetPosition(1, naveTransform.position);
+    }
+
+    // Ayuda visual en el editor para ver el radio permitido.
     private void OnDrawGizmosSelected()
     {
-        if (NaveTransform == null)
-            return;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(NaveTransform.position, inicioTension);
+        if (naveTransform == null) return;
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(NaveTransform.position, distanciaMaxima);
+        Gizmos.DrawWireSphere(naveTransform.position, distanciaMaxima);
     }
 }

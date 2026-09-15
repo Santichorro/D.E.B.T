@@ -37,15 +37,9 @@ public class GravityGun : MonoBehaviour
     [Tooltip("Distancia MÁXIMA a la que puede llegar el reticle con el stick al fondo. Con el mouse no aplica: ahí el reticle sigue la posición real del cursor.")]
     public float maxAimDistance = 6f;
 
-    [Header("Colores por jugador")]
-    [Tooltip("Índice 0 = Player1, 1 = Player2, etc. Debe tener al menos 4 colores.")]
-    public Color[] playerColors = new Color[]
-    {
-        Color.cyan,
-        Color.yellow,
-        Color.green,
-        Color.magenta
-    };
+    [Header("Color por defecto")]
+    [Tooltip("Color usado hasta que PlayerRoleController asigne el color real del rol (ej. mientras se prueba la escena sin sistema de roles).")]
+    public Color colorPorDefecto = Color.white;
 
     private PlayerPhysics myPhysics;
     private Rigidbody myRigidbody;
@@ -57,6 +51,7 @@ public class GravityGun : MonoBehaviour
     private Vector3 lastAimDirection = Vector3.right;
     private Vector3 currentAimPoint;
     private Renderer aimReticleRenderer;
+    private PlayerRoleController roleController;
 
     public Vector3 AimPoint => currentAimPoint;
     public Transform Muzzle => muzzle;
@@ -75,6 +70,7 @@ public class GravityGun : MonoBehaviour
         myPhysics = GetComponent<PlayerPhysics>();
         myRigidbody = GetComponent<Rigidbody>();
         playerInput = GetComponent<PlayerInput>();
+        roleController = GetComponent<PlayerRoleController>();
 
         sharedCamera = aimCamera != null ? aimCamera : Camera.main;
 
@@ -84,18 +80,43 @@ public class GravityGun : MonoBehaviour
         currentEnergy = maxEnergy;
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        ApplyPlayerColor();
+        if (roleController != null)
+            roleController.OnRoleChanged += OnRoleChanged;
+
+        inputActions = new NIS();
+        inputActions.devices = playerInput.devices;
+        inputActions.Player.Enable();
+
+        inputActions.Player.GravityGun.started += OnFireStarted;
+        inputActions.Player.GravityGun.canceled += OnFireCanceled;
+
+        inputActions.Player.Aim.performed += OnAim;
+        inputActions.Player.Aim.canceled += OnAim;
     }
 
-    private void ApplyPlayerColor()
+    private void Start()
     {
-        int index = playerInput.playerIndex;
-        Color color = (index >= 0 && index < playerColors.Length)
-            ? playerColors[index]
-            : Color.white;
+        RefreshRoleColor();
+    }
 
+    private void OnRoleChanged(PlayerRole role)
+    {
+        RefreshRoleColor();
+    }
+
+    private void RefreshRoleColor()
+    {
+        Color color = (roleController != null && roleController.HasRole)
+            ? roleController.AssignedRoleColor
+            : colorPorDefecto;
+
+        AplicarColorVisual(color);
+    }
+
+    private void AplicarColorVisual(Color color)
+    {
         if (aimReticle != null)
         {
             aimReticleRenderer = aimReticle.GetComponent<Renderer>();
@@ -117,27 +138,16 @@ public class GravityGun : MonoBehaviour
 
     public Color GetAssignedColor()
     {
-        int index = playerInput.playerIndex;
-        return (index >= 0 && index < playerColors.Length)
-            ? playerColors[index]
-            : Color.white;
-    }
-
-    private void OnEnable()
-    {
-        inputActions = new NIS();
-        inputActions.devices = playerInput.devices;
-        inputActions.Player.Enable();
-
-        inputActions.Player.GravityGun.started += OnFireStarted;
-        inputActions.Player.GravityGun.canceled += OnFireCanceled;
-
-        inputActions.Player.Aim.performed += OnAim;
-        inputActions.Player.Aim.canceled += OnAim;
+        return (roleController != null && roleController.HasRole)
+            ? roleController.AssignedRoleColor
+            : colorPorDefecto;
     }
 
     private void OnDisable()
     {
+        if (roleController != null)
+            roleController.OnRoleChanged -= OnRoleChanged;
+
         inputActions.Player.GravityGun.started -= OnFireStarted;
         inputActions.Player.GravityGun.canceled -= OnFireCanceled;
         inputActions.Player.Aim.performed -= OnAim;
@@ -272,10 +282,6 @@ public class GravityGun : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Libera el gancho solo si está sujetando el Rigidbody indicado.
-    /// Se usa cuando la carga se entrega para que la fuerza del gancho no siga actuando.
-    /// </summary>
     public bool ForceReleaseIfAttachedTo(Rigidbody targetRigidbody)
     {
         if (!HasAttachedTarget || targetRigidbody == null || activeHook.TargetRb != targetRigidbody)

@@ -7,9 +7,13 @@ public class EnemyController : MonoBehaviour
     [Header("Movimiento")]
     public float moveForce = 10f;
 
-    [Header("Objetivo: nave")]
-    [Tooltip("Si queda vacío, toma la nave activa de la escena y, como respaldo, busca el tag 'Ship'.")]
+    [Header("Objetivo: nave (prioridad por defecto)")]
+    [Tooltip("Si lo dejás vacío, busca un objeto con tag 'Ship' apenas lo necesite.")]
     public Transform naveTransform;
+
+    [Header("Objetivo: jugador cercano (tiene prioridad sobre la nave)")]
+    [Tooltip("Si un jugador está a esta distancia o menos, el enemigo lo persigue a él en vez de ir hacia la nave. Fuera de esta distancia, siempre va hacia la nave sin importar qué tan lejos esté.")]
+    public float playerAggroRange = 8f;
 
     [Header("Ataque por colisión")]
     public float collisionDamage = 10f;
@@ -53,32 +57,44 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    /// <summary>El movimiento de los enemigos tiene como único objetivo la nave.</summary>
+    /// <summary>
+    /// Prioridad: jugador cercano (dentro de playerAggroRange) > nave, sin importar
+    /// qué tan lejos esté esta última.
+    /// </summary>
     private Transform ElegirObjetivo()
     {
-        // Una referencia guardada en un prefab puede apuntar al asset de la nave
-        // y no a su instancia en juego. Solo aceptamos transforms de una escena cargada.
-        if (!NaveEnEscenaEsValida())
+        Transform jugadorCercano = BuscarJugadorCercanoDentroDelRango();
+        if (jugadorCercano != null) return jugadorCercano;
+
+        if (naveTransform == null)
             BuscarNave();
 
         return naveTransform; // Puede ser null si todavía no existe la nave en la escena.
     }
 
-    private bool NaveEnEscenaEsValida()
+    private Transform BuscarJugadorCercanoDentroDelRango()
     {
-        return naveTransform != null &&
-               naveTransform.gameObject.scene.IsValid() &&
-               naveTransform.gameObject.scene.isLoaded;
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        if (players.Length == 0) return null;
+
+        float closestDist = float.MaxValue;
+        Transform closest = null;
+
+        foreach (var p in players)
+        {
+            float d = Vector3.Distance(transform.position, p.transform.position);
+            if (d < closestDist)
+            {
+                closestDist = d;
+                closest = p.transform;
+            }
+        }
+
+        return (closestDist <= playerAggroRange) ? closest : null;
     }
 
     private void BuscarNave()
     {
-        if (ShipController.ActiveTetherShip != null)
-        {
-            naveTransform = ShipController.ActiveTetherShip.transform;
-            return;
-        }
-
         GameObject nave = GameObject.FindGameObjectWithTag("Ship");
         if (nave != null)
             naveTransform = nave.transform;
