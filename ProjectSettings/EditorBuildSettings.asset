@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MAPA MK1.unity
     guid: 7b533dfe561bc47c8975c955fe4ef3d3
   - enabled: 1
-    path: Assets/Scenes/PRIMER NIVEL.unity
+    path: Assets/Scenes/MAPA MK2 JUAN SOLO JUAN.unity
     guid: d6de4518139e27148861f8aa74778253
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

@@ -6,15 +6,9 @@ public class EnemyController : MonoBehaviour
 {
     [Header("Movimiento")]
     public float moveForce = 10f;
-
-    [Header("Objetivo: nave (prioridad por defecto)")]
-    [Tooltip("Si lo dejás vacío, busca un objeto con tag 'Ship' apenas lo necesite.")]
-    public Transform naveTransform;
-
-    [Header("Objetivo: jugador cercano (tiene prioridad sobre la nave)")]
-    [Tooltip("Si un jugador está a esta distancia o menos, el enemigo lo persigue a él en vez de ir hacia la nave. Fuera de esta distancia, siempre va hacia la nave sin importar qué tan lejos esté.")]
-    public float playerAggroRange = 8f;
-
+    [Tooltip("Distancia máxima para detectar y perseguir a un jugador. Fuera de este rango, el enemigo no tiene objetivo (normalmente iría hacia la nave, pero esa mecánica aún no existe).")]
+    public float detectionRange = 8f;
+    
     [Header("Ataque por colisión")]
     public float collisionDamage = 10f;
     public float damageCooldown = 1f;
@@ -30,6 +24,7 @@ public class EnemyController : MonoBehaviour
 
     private PlayerPhysics physics;
     private Health health;
+    private Transform targetPlayer;
     private float lastDamageTime = -999f;
 
     private void Awake()
@@ -45,37 +40,27 @@ public class EnemyController : MonoBehaviour
     {
         if (IsGrabbed) return;
 
-        Transform objetivo = ElegirObjetivo();
-        if (objetivo == null) return;
+        FindNearestPlayerInRange();
 
-        Vector3 haciaObjetivo = objetivo.position - transform.position;
-        haciaObjetivo.z = 0f;
+        if (targetPlayer == null) return;
 
-        if (haciaObjetivo.magnitude > 0.01f)
+        Vector3 toPlayer = targetPlayer.position - transform.position;
+        toPlayer.z = 0f;
+
+        if (toPlayer.magnitude > 0.01f)
         {
-            physics.ApplyForce(haciaObjetivo.normalized * moveForce);
+            physics.ApplyForce(toPlayer.normalized * moveForce);
         }
     }
 
-    /// <summary>
-    /// Prioridad: jugador cercano (dentro de playerAggroRange) > nave, sin importar
-    /// qué tan lejos esté esta última.
-    /// </summary>
-    private Transform ElegirObjetivo()
-    {
-        Transform jugadorCercano = BuscarJugadorCercanoDentroDelRango();
-        if (jugadorCercano != null) return jugadorCercano;
-
-        if (naveTransform == null)
-            BuscarNave();
-
-        return naveTransform; // Puede ser null si todavía no existe la nave en la escena.
-    }
-
-    private Transform BuscarJugadorCercanoDentroDelRango()
+    private void FindNearestPlayerInRange()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        if (players.Length == 0) return null;
+        if (players.Length == 0)
+        {
+            targetPlayer = null;
+            return;
+        }
 
         float closestDist = float.MaxValue;
         Transform closest = null;
@@ -90,20 +75,16 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        return (closestDist <= playerAggroRange) ? closest : null;
-    }
-
-    private void BuscarNave()
-    {
-        GameObject nave = GameObject.FindGameObjectWithTag("Ship");
-        if (nave != null)
-            naveTransform = nave.transform;
+        targetPlayer = (closestDist <= detectionRange) ? closest : null;
     }
 
     public void SetGrabbed(bool grabbed)
     {
         IsGrabbed = grabbed;
+        if (grabbed)
+            targetPlayer = null;
     }
+
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -141,6 +122,18 @@ public class EnemyController : MonoBehaviour
 
         float damage = impactSpeed * impactDamageMultiplier;
         health.TakeDamage(damage);
+    }
+
+    private void TryDealDamage(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+        if (Time.time - lastDamageTime < damageCooldown) return;
+
+        Health targetHealth = other.GetComponent<Health>();
+        if (targetHealth == null) return;
+
+        targetHealth.TakeDamage(collisionDamage);
+        lastDamageTime = Time.time;
     }
 
     private void HandleDeath()

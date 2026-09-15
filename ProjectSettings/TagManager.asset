@@ -4,7 +4,7 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Ship
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
