@@ -9,7 +9,7 @@ public class IntroManager : MonoBehaviour
     [Header("Referencias UI")]
     [SerializeField] private CanvasGroup teamLogoGroup;
     [SerializeField] private CanvasGroup gameLogoGroup;
-    [SerializeField] private CanvasGroup promptGroup; // CanvasGroup del "PromptContainer" (íconos + texto)
+    [SerializeField] private CanvasGroup promptGroup;
 
     [Header("Tiempos (segundos)")]
     [SerializeField] private float fadeInDuration = 1f;
@@ -20,12 +20,25 @@ public class IntroManager : MonoBehaviour
     [Header("Escena destino")]
     [SerializeField] private string nombreEscenaJuego = "Escena_Inicio";
 
+    [Header("Sonido")]
+    [Tooltip("AudioSource que reproducirá el sonido al confirmar inicio. Si se deja vacío, se buscará uno en este GameObject.")]
+    [SerializeField] private AudioSource audioSource;
+    [Tooltip("Sonido que se reproduce al presionar el botón para iniciar el juego.")]
+    [SerializeField] private AudioClip confirmSound;
+    [Tooltip("Segundos de espera antes de cargar la siguiente escena, para que el sonido de inicio se alcance a escuchar.")]
+    [SerializeField] private float delayAntesDeCargar = 3f;
+
     private bool puedeContinuar = false;
     private bool yaSalto = false;
 
+    private void Awake()
+    {
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+    }
+
     private void Start()
     {
-        // Estado inicial: todo invisible.
         teamLogoGroup.alpha = 0f;
         gameLogoGroup.alpha = 0f;
         promptGroup.alpha = 0f;
@@ -35,15 +48,12 @@ public class IntroManager : MonoBehaviour
 
     private IEnumerator SecuenciaIntro()
     {
-        // 1) Logo del team: fade in -> hold -> fade out
         yield return StartCoroutine(Fade(teamLogoGroup, 0f, 1f, fadeInDuration));
         yield return new WaitForSeconds(holdDuration);
         yield return StartCoroutine(Fade(teamLogoGroup, 1f, 0f, fadeOutDuration));
 
-        // 2) Logo del juego: fade in y se queda
         yield return StartCoroutine(Fade(gameLogoGroup, 0f, 1f, fadeInDuration));
 
-        // 3) Habilita el texto titilante y la posibilidad de continuar
         puedeContinuar = true;
         StartCoroutine(TitilarTexto());
     }
@@ -64,9 +74,8 @@ public class IntroManager : MonoBehaviour
     {
         while (!yaSalto)
         {
-            // Efecto de titileo con una onda seno (más suave que on/off)
             float alpha = (Mathf.Sin(Time.time / blinkSpeed * Mathf.PI) + 1f) / 2f;
-            promptGroup.alpha = alpha; // Titila todo el contenedor: íconos + texto
+            promptGroup.alpha = alpha;
             yield return null;
         }
     }
@@ -79,13 +88,27 @@ public class IntroManager : MonoBehaviour
                                 Keyboard.current.eKey.wasPressedThisFrame;
 
         bool presionoMando = Gamepad.current != null &&
-                              Gamepad.current.buttonWest.wasPressedThisFrame; // Cuadrado en PlayStation
+                              Gamepad.current.buttonWest.wasPressedThisFrame;
 
         if (presionoTeclado || presionoMando)
         {
             yaSalto = true;
-            CargarJuego();
+            PlayConfirmSound();
+            StartCoroutine(CargarJuegoRoutine());
         }
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (audioSource != null && confirmSound != null)
+            audioSource.PlayOneShot(confirmSound);
+    }
+
+    private IEnumerator CargarJuegoRoutine()
+    {
+        yield return new WaitForSeconds(delayAntesDeCargar);
+
+        CargarJuego();
     }
 
     private void CargarJuego()
