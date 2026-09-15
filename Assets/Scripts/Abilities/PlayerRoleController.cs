@@ -45,7 +45,7 @@ public class PlayerRoleController : MonoBehaviour
     /// </summary>
     public IAbility CurrentAbility { get; private set; }
 
-    /// <summary>Se dispara cada vez que el rol asignado cambia (por interact o al hacer join). Útil para refrescar UI sin que esta tenga que hacer polling.</summary>
+    /// <summary>Se dispara cada vez que el rol asignado cambia (por RolChange o al hacer join). Útil para refrescar UI sin que esta tenga que hacer polling.</summary>
     public event Action<PlayerRole> OnRoleChanged;
 
     private PlayerInput playerInput;
@@ -77,11 +77,11 @@ public class PlayerRoleController : MonoBehaviour
     {
         inputActions.devices = playerInput.devices;
         inputActions.Player.Enable();
-        inputActions.Player.Interact.performed += OnInteractInput;
+        inputActions.Player.RolChange.performed += OnRolChangeInput;
 
         AssignFirstAvailableRole();
 
-        // El botón que crea un PlayerInput también puede disparar Interact en este
+        // El botón que crea un PlayerInput también puede disparar RolChange en este
         // mismo frame. Esperar un frame evita que ese input de join cambie el rol
         // recién asignado por el enum.
         canCycleRoles = false;
@@ -97,13 +97,13 @@ public class PlayerRoleController : MonoBehaviour
         }
 
         canCycleRoles = false;
-        inputActions.Player.Interact.performed -= OnInteractInput;
+        inputActions.Player.RolChange.performed -= OnRolChangeInput;
         inputActions.Player.Disable();
 
         ReleaseRole();
     }
 
-    private void OnInteractInput(InputAction.CallbackContext ctx)
+    private void OnRolChangeInput(InputAction.CallbackContext ctx)
     {
         if (!canCycleRoles) return;
 

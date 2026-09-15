@@ -24,6 +24,8 @@ public class Door : MonoBehaviour
     private Vector3[] closedLocalPositions;
     private Coroutine moveRoutine;
     private bool isOpen;
+    private bool missionLocked;
+    private bool missionUnlocked;
 
     private void Awake()
     {
@@ -74,10 +76,41 @@ public class Door : MonoBehaviour
 
     private void RefreshStateFromMechanisms()
     {
+        if (missionLocked)
+        {
+            if (missionUnlocked)
+                Open();
+            else
+                Close();
+
+            return;
+        }
+
         if (AnyLinkedMechanismIsDisabled())
             Open();
         else if (closeWhenMechanismsReactivate)
             Close();
+    }
+
+    /// <summary>
+    /// Hace que esta puerta ignore sus mecanismos hasta que MissionGoal la desbloquee.
+    /// No se serializa ni altera el comportamiento de las demás puertas.
+    /// </summary>
+    public void SetMissionLocked(bool locked)
+    {
+        missionLocked = locked;
+        if (locked)
+            RefreshStateFromMechanisms();
+    }
+
+    /// <summary>
+    /// Abre la puerta permanentemente para la misión actual y evita que un mecanismo la cierre.
+    /// </summary>
+    public void UnlockForMission()
+    {
+        missionLocked = true;
+        missionUnlocked = true;
+        Open();
     }
 
     private bool AnyLinkedMechanismIsDisabled()
