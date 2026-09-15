@@ -13001,8 +13001,24 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Ship
       objectReference: {fileID: 0}
+    - target: {fileID: 1813750728448469399, guid: c2b0189859dfb824bb62eccf9bbd205a, type: 3}
+      propertyPath: habilitarTetherDeJugadores
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3936596513182231170, guid: c2b0189859dfb824bb62eccf9bbd205a, type: 3}
       propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936596513182231170, guid: c2b0189859dfb824bb62eccf9bbd205a, type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936596513182231170, guid: c2b0189859dfb824bb62eccf9bbd205a, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7230376886471096131, guid: c2b0189859dfb824bb62eccf9bbd205a, type: 3}
+      propertyPath: habilitarTetherDeJugadores
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7905772022519578469, guid: c2b0189859dfb824bb62eccf9bbd205a, type: 3}
@@ -21939,7 +21955,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1465774349
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -70,10 +70,26 @@ public class AnchorAbility : MonoBehaviour, IAbility
         {
             if (hit.collider.gameObject == casterPhysics.gameObject) return;
 
-            if (hit.collider.TryGetComponent(out IAnchorable anchorable))
-            {
+            IAnchorable anchorable = FindAnchorableOnColliderOrParents(hit.collider);
+            if (anchorable != null)
                 anchorable.Anchor(anchorDuration);
+        }
+    }
+
+    // Las hojas de una puerta tienen sus propios colliders, mientras que la
+    // lógica IAnchorable vive en su raíz. Esto se evalúa solo al usar la habilidad.
+    private static IAnchorable FindAnchorableOnColliderOrParents(Collider collider)
+    {
+        for (Transform current = collider.transform; current != null; current = current.parent)
+        {
+            MonoBehaviour[] behaviours = current.GetComponents<MonoBehaviour>();
+            foreach (MonoBehaviour behaviour in behaviours)
+            {
+                if (behaviour is IAnchorable anchorable)
+                    return anchorable;
             }
         }
+
+        return null;
     }
 }

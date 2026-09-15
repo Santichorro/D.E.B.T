@@ -634,6 +634,7 @@ GameObject:
   - component: {fileID: 456728686186493043}
   - component: {fileID: 4685935289351972152}
   - component: {fileID: 1265289406065864039}
+  - component: {fileID: 991111001}
   - component: {fileID: 1820837232998003036}
   m_Layer: 7
   m_Name: Player
@@ -1035,7 +1036,7 @@ MonoBehaviour:
   cooldown: 6
   anchorableLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 1096
 --- !u!114 &7912250066361419191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1054,7 +1055,7 @@ MonoBehaviour:
   cooldown: 3
   affectedLayers:
     serializedVersion: 2
-    m_Bits: 136
+    m_Bits: 1160
   blackHoleTraversalWindow: 2
   showGizmo: 1
 --- !u!114 &1797168195193372449
@@ -1153,6 +1154,30 @@ MonoBehaviour:
   emissionSmoothSpeed: 10
   angleOffset: 0
   rotationSmoothSpeed: 200
+--- !u!114 &991111001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7866151229289544535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbda67595517bb049b1d68fa8640e94a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerShipLine
+  distanciaMaxima: 20
+  inicioTension: 10
+  fuerzaMinima: 18
+  fuerzaMaxima: 60
+  margenFreno: 2
+  impulsoMaximoDeFreno: 1.5
+  cableRenderer: {fileID: 8816996889393924426}
+  puntoOrigenJugador: {fileID: 0}
+  ocultarMientrasPilota: 1
+  ocultarSiEstaMuerto: 1
+  usarColorDeGravityGun: 1
+  colorFijo: {r: 0, g: 1, b: 1, a: 1}
 --- !u!82 &1820837232998003036
 AudioSource:
   m_ObjectHideFlags: 0
