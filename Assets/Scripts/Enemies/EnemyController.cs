@@ -6,9 +6,11 @@ public class EnemyController : MonoBehaviour
 {
     [Header("Movimiento")]
     public float moveForce = 10f;
-    [Tooltip("Distancia máxima para detectar y perseguir a un jugador. Fuera de este rango, el enemigo no tiene objetivo (normalmente iría hacia la nave, pero esa mecánica aún no existe).")]
-    public float detectionRange = 8f;
-    
+
+    [Header("Objetivo: nave")]
+    [Tooltip("Si queda vacío, toma la nave activa de la escena y, como respaldo, busca el tag 'Ship'.")]
+    public Transform naveTransform;
+
     [Header("Ataque por colisión")]
     public float collisionDamage = 10f;
     public float damageCooldown = 1f;
@@ -24,7 +26,6 @@ public class EnemyController : MonoBehaviour
 
     private PlayerPhysics physics;
     private Health health;
-    private Transform targetPlayer;
     private float lastDamageTime = -999f;
 
     private void Awake()
@@ -40,51 +41,53 @@ public class EnemyController : MonoBehaviour
     {
         if (IsGrabbed) return;
 
-        FindNearestPlayerInRange();
+        Transform objetivo = ElegirObjetivo();
+        if (objetivo == null) return;
 
-        if (targetPlayer == null) return;
+        Vector3 haciaObjetivo = objetivo.position - transform.position;
+        haciaObjetivo.z = 0f;
 
-        Vector3 toPlayer = targetPlayer.position - transform.position;
-        toPlayer.z = 0f;
-
-        if (toPlayer.magnitude > 0.01f)
+        if (haciaObjetivo.magnitude > 0.01f)
         {
-            physics.ApplyForce(toPlayer.normalized * moveForce);
+            physics.ApplyForce(haciaObjetivo.normalized * moveForce);
         }
     }
 
-    private void FindNearestPlayerInRange()
+    /// <summary>El movimiento de los enemigos tiene como único objetivo la nave.</summary>
+    private Transform ElegirObjetivo()
     {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        if (players.Length == 0)
+        // Una referencia guardada en un prefab puede apuntar al asset de la nave
+        // y no a su instancia en juego. Solo aceptamos transforms de una escena cargada.
+        if (!NaveEnEscenaEsValida())
+            BuscarNave();
+
+        return naveTransform; // Puede ser null si todavía no existe la nave en la escena.
+    }
+
+    private bool NaveEnEscenaEsValida()
+    {
+        return naveTransform != null &&
+               naveTransform.gameObject.scene.IsValid() &&
+               naveTransform.gameObject.scene.isLoaded;
+    }
+
+    private void BuscarNave()
+    {
+        if (ShipController.ActiveTetherShip != null)
         {
-            targetPlayer = null;
+            naveTransform = ShipController.ActiveTetherShip.transform;
             return;
         }
 
-        float closestDist = float.MaxValue;
-        Transform closest = null;
-
-        foreach (var p in players)
-        {
-            float d = Vector3.Distance(transform.position, p.transform.position);
-            if (d < closestDist)
-            {
-                closestDist = d;
-                closest = p.transform;
-            }
-        }
-
-        targetPlayer = (closestDist <= detectionRange) ? closest : null;
+        GameObject nave = GameObject.FindGameObjectWithTag("Ship");
+        if (nave != null)
+            naveTransform = nave.transform;
     }
 
     public void SetGrabbed(bool grabbed)
     {
         IsGrabbed = grabbed;
-        if (grabbed)
-            targetPlayer = null;
     }
-
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -122,18 +125,6 @@ public class EnemyController : MonoBehaviour
 
         float damage = impactSpeed * impactDamageMultiplier;
         health.TakeDamage(damage);
-    }
-
-    private void TryDealDamage(Collider other)
-    {
-        if (!other.CompareTag("Player")) return;
-        if (Time.time - lastDamageTime < damageCooldown) return;
-
-        Health targetHealth = other.GetComponent<Health>();
-        if (targetHealth == null) return;
-
-        targetHealth.TakeDamage(collisionDamage);
-        lastDamageTime = Time.time;
     }
 
     private void HandleDeath()

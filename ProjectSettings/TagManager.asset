@@ -4,7 +4,7 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - FxTemporaire
+  - Ship
   layers:
   - Default
   - TransparentFX
@@ -16,7 +16,7 @@ TagManager:
   - Player
   - HeavyObj
   - Desactivadores
-  - 
+  - Object
   - 
   - 
   - 

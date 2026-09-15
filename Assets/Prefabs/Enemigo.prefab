@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   moveForce: 2
-  detectionRange: 10
+  naveTransform: {fileID: 0}
   collisionDamage: 15
   damageCooldown: 1
   minImpactSpeed: 2
