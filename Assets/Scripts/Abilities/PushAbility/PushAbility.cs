@@ -16,6 +16,8 @@ public class PushAbility : MonoBehaviour, IAbility
     [Header("Efecto visual")]
     [Tooltip("Partículas que se reproducen al activar el empuje.")]
     [SerializeField] private ParticleSystem pushParticles;
+    [Tooltip("Tiempo que el GameObject de partículas permanece activo tras el empuje.")]
+    [SerializeField] private float visualDuration = 1f;
 
     [Header("Cruce de agujero negro")]
     [Tooltip("Tiempo durante el cual el jugador empujado ignora la repulsión del agujero negro.")]
@@ -69,6 +71,8 @@ public class PushAbility : MonoBehaviour, IAbility
         Activate(physics, direction.normalized);
     }
 
+    private Coroutine visualRoutine;
+
     public void Activate(PlayerPhysics casterPhysics, Vector3 direction)
     {
         if (!IsReady)
@@ -76,9 +80,13 @@ public class PushAbility : MonoBehaviour, IAbility
 
         lastActivationTime = Time.time;
 
-        // Reproducir partículas del empuje
         if (pushParticles != null)
-            pushParticles.Play();
+        {
+            if (visualRoutine != null)
+                StopCoroutine(visualRoutine);
+
+            visualRoutine = StartCoroutine(ShowPushParticles());
+        }
 
         Vector3 origin = aimSource.Muzzle != null
             ? aimSource.Muzzle.position
@@ -92,12 +100,22 @@ public class PushAbility : MonoBehaviour, IAbility
             range,
             affectedLayers))
         {
-            // Nunca afectarse a sí mismo.
             if (hit.collider.gameObject == casterPhysics.gameObject)
                 return;
 
             ApplyPush(hit.collider, direction);
         }
+    }
+
+    private System.Collections.IEnumerator ShowPushParticles()
+    {
+        pushParticles.gameObject.SetActive(true);
+        pushParticles.Clear();
+        pushParticles.Play();
+
+        yield return new WaitForSeconds(visualDuration);
+
+        pushParticles.gameObject.SetActive(false);
     }
 
     private void ApplyPush(Collider target, Vector3 direction)
@@ -124,6 +142,7 @@ public class PushAbility : MonoBehaviour, IAbility
             );
         }
     }
+
 
     private void OnDrawGizmosSelected()
     {

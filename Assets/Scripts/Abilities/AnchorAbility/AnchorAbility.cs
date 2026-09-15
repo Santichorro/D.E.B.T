@@ -49,23 +49,15 @@ public class AnchorAbility : MonoBehaviour, IAbility
 
     private void OnAbilityInput(InputAction.CallbackContext ctx)
     {
-        Debug.Log(
-            ">>> [AnchorAbility] OnAbilityInput detectado. Tecla presionada."
-        );
-
         Vector3 direction =
             aimSource.AimPoint - aimSource.Muzzle.position;
 
         direction.z = 0f;
 
-        // Fallback si el jugador aún no movió el aim en este frame.
         if (direction.sqrMagnitude < 0.0001f)
             direction = transform.right;
 
-        Activate(
-            physics,
-            direction.normalized
-        );
+        Activate(physics, direction.normalized);
     }
 
     public void Activate(
@@ -75,41 +67,61 @@ public class AnchorAbility : MonoBehaviour, IAbility
         if (!IsReady)
             return;
 
+        // El cooldown se consume siempre al presionar, haya o no objetivo.
         lastActivationTime = Time.time;
+
+        IAnchorable anchorable = null;
+        Rigidbody targetRb = null;
+
+        // Prioridad 1: si el gravity gun ya tiene algo enganchado, anclamos ESO,
+        // sin depender de que el raycast del aim lo esté tocando en ese instante.
+        if (aimSource.HasAttachedTarget)
+        {
+            targetRb = aimSource.AttachedTargetRb;
+            if (targetRb != null)
+                anchorable = FindAnchorableOnTransform(targetRb.transform);
+        }
+
+        // Prioridad 2: si no hay nada enganchado, probamos con raycast
+        // (para objetos ancladles a distancia sin necesidad de agarrarlos, ej. puertas).
+        if (anchorable == null)
+        {
+            Vector3 origin = aimSource.Muzzle != null
+                ? aimSource.Muzzle.position
+                : casterPhysics.transform.position;
+
+            if (Physics.Raycast(
+                origin,
+                direction,
+                out RaycastHit hit,
+                range,
+                anchorableLayers))
+            {
+                if (hit.collider.gameObject != casterPhysics.gameObject)
+                {
+                    anchorable = FindAnchorableOnTransform(hit.collider.transform);
+                    targetRb = hit.rigidbody;
+                }
+            }
+        }
+
+        if (anchorable == null)
+            return;
 
         // Reproducir partículas del anclaje
         if (anchorParticles != null)
             anchorParticles.Play();
 
-        Vector3 origin = aimSource.Muzzle != null
-            ? aimSource.Muzzle.position
-            : casterPhysics.transform.position;
-
-        if (Physics.Raycast(
-            origin,
-            direction,
-            out RaycastHit hit,
-            range,
-            anchorableLayers))
-        {
-            if (hit.collider.gameObject == casterPhysics.gameObject)
-                return;
-
-            IAnchorable anchorable =
-                FindAnchorableOnColliderOrParents(hit.collider);
-
-            if (anchorable != null)
-                anchorable.Anchor(anchorDuration);
-        }
+        anchorable.Anchor(anchorDuration);
+        aimSource.ForceReleaseIfAttachedTo(targetRb);
     }
 
     // Las hojas de una puerta tienen sus propios colliders,
     // mientras que la lógica IAnchorable vive en su raíz.
-    private static IAnchorable FindAnchorableOnColliderOrParents(
-        Collider collider)
+    private static IAnchorable FindAnchorableOnTransform(Transform start)
     {
         for (
-            Transform current = collider.transform;
+            Transform current = start;
             current != null;
             current = current.parent)
         {

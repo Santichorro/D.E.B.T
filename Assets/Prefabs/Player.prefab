@@ -1031,7 +1031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc9361a2ae741b0449af01a176299f65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnchorAbility
-  range: 8
+  range: 10
   anchorDuration: 4
   cooldown: 3
   anchorableLayers:
@@ -1058,6 +1058,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 392
   pushParticles: {fileID: 5069959733048311545, guid: 4341644f850d9d74690555d31334f15a, type: 3}
+  visualDuration: 1
   blackHoleTraversalWindow: 2
   showGizmo: 1
 --- !u!114 &1797168195193372449
