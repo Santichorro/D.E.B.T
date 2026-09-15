@@ -1032,8 +1032,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnchorAbility
   range: 8
-  anchorDuration: 3
-  cooldown: 6
+  anchorDuration: 4
+  cooldown: 3
   anchorableLayers:
     serializedVersion: 2
     m_Bits: 1096
