@@ -5172,7 +5172,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 24.99999, y: 473.04996}
+  m_AnchoredPosition: {x: 25, y: 473.04996}
   m_SizeDelta: {x: -1440.6707, y: -1009.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &379751971
@@ -10820,6 +10820,7 @@ GameObject:
   m_Component:
   - component: {fileID: 732991038}
   - component: {fileID: 991000001}
+  - component: {fileID: 991000031}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -10844,6 +10845,7 @@ Transform:
   - {fileID: 1230862899}
   - {fileID: 1746795485}
   - {fileID: 1527719612}
+  - {fileID: 1442379107}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &733520138
@@ -14454,8 +14456,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 25, y: -42}
-  m_SizeDelta: {x: 420, y: 60}
+  m_AnchoredPosition: {x: 21.323, y: -42}
+  m_SizeDelta: {x: 472.8, y: 60}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &991000022
 MonoBehaviour:
@@ -14477,7 +14479,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '0 : DOLARES'
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 024ed49f885785249a25ecc6b8c0fb36, type: 2}
   m_sharedMaterial: {fileID: -8441283181759923517, guid: 024ed49f885785249a25ecc6b8c0fb36, type: 2}
@@ -14504,8 +14506,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 38
-  m_fontSizeBase: 38
+  m_fontSize: 25.6
+  m_fontSizeBase: 25.6
   m_fontWeight: 700
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -14543,7 +14545,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -0.3319847, w: 0}
+  m_margin: {x: 0, y: 9.611463, z: -0.3319847, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -14571,6 +14573,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MoneyPanelUI
   moneyText: {fileID: 991000022}
   prefix: '0 : DOLARES'
+--- !u!114 &991000031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 732991037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ad72fb6d3cd4a9e91c9f09d23a8e79f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MissionGoal
+  requiredMoney: 100
+  finalDoor: {fileID: 0}
+  lockFinalDoorUntilCompleted: 1
+  onGoalCompleted:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &1004622794
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21401,6 +21421,70 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 409034, guid: a4c18952442944083b1fddc06ba477c2, type: 3}
   m_PrefabInstance: {fileID: 1434897090}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1442379106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1442379107}
+  - component: {fileID: 1442379109}
+  - component: {fileID: 1442379108}
+  m_Layer: 0
+  m_Name: FinalDoorManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1442379107
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442379106}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 732991038}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1442379108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442379106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ad72fb6d3cd4a9e91c9f09d23a8e79f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MissionGoal
+  requiredMoney: 4000
+  finalDoor: {fileID: 1789980737}
+  lockFinalDoorUntilCompleted: 1
+  onGoalCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1442379109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442379106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01f28bc3f3074fd5bc02d2ac5c741a6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MissionMoney
+  startingMoney: 0
 --- !u!1 &1443530236
 GameObject:
   m_ObjectHideFlags: 0
@@ -27076,6 +27160,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 416390, guid: c76d2d3504ddb4847940a815cad04644, type: 3}
   m_PrefabInstance: {fileID: 1789887391}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1789980737 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 756928341765432109, guid: 69ec274460c36044ead55236d94e8f17, type: 3}
+  m_PrefabInstance: {fileID: 1284987695}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef5174558b49c7a4bb16040a934256f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!1 &1797104760 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 911628261248438236, guid: 506a363ae4ba78d4fb6a5664aaa4f68c, type: 3}
