@@ -130,4 +130,14 @@ public class PlayerPhysics : MonoBehaviour, IAnchorable
         // preAnchorVelocity queda disponible por si en el futuro se decide reanudar el impulso
         // en vez de arrancar de cero; por ahora el objeto retoma control normal desde velocidad 0.
     }
+
+    public void ReleaseAnchor()
+    {
+        if (anchorRoutine != null)
+        {
+            StopCoroutine(anchorRoutine);
+            anchorRoutine = null;
+        }
+        IsAnchored = false;
+    }
 }
