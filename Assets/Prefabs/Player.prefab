@@ -1036,7 +1036,8 @@ MonoBehaviour:
   cooldown: 3
   anchorableLayers:
     serializedVersion: 2
-    m_Bits: 1096
+    m_Bits: 328
+  anchorParticles: {fileID: 0}
 --- !u!114 &7912250066361419191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1055,7 +1056,8 @@ MonoBehaviour:
   cooldown: 3
   affectedLayers:
     serializedVersion: 2
-    m_Bits: 1160
+    m_Bits: 392
+  pushParticles: {fileID: 5069959733048311545, guid: 4341644f850d9d74690555d31334f15a, type: 3}
   blackHoleTraversalWindow: 2
   showGizmo: 1
 --- !u!114 &1797168195193372449

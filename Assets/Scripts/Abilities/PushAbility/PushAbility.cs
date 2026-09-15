@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 [RequireComponent(typeof(PlayerPhysics))]
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(GravityGun))]
@@ -14,10 +13,13 @@ public class PushAbility : MonoBehaviour, IAbility
     [SerializeField] private float cooldown = 3f;
     [SerializeField] private LayerMask affectedLayers;
 
+    [Header("Efecto visual")]
+    [Tooltip("Partículas que se reproducen al activar el empuje.")]
+    [SerializeField] private ParticleSystem pushParticles;
+
     [Header("Cruce de agujero negro")]
     [Tooltip("Tiempo durante el cual el jugador empujado ignora la repulsión del agujero negro.")]
     [SerializeField, Min(0f)] private float blackHoleTraversalWindow = 2f;
-    
 
     [Header("Debug")]
     [SerializeField] private bool showGizmo = true;
@@ -41,9 +43,8 @@ public class PushAbility : MonoBehaviour, IAbility
 
     private void OnEnable()
     {
-        // Mismo patrón que PulseAbility/AnchorAbility: reutiliza los devices ya
-        // asignados a este PlayerInput para que el empuje responda al mando/teclado
-        // correcto de este jugador específico.
+        // Reutilizar los dispositivos asignados a este jugador
+        // para que la habilidad responda al mando/teclado correcto.
         inputActions.devices = playerInput.devices;
 
         inputActions.Player.Enable();
@@ -70,17 +71,30 @@ public class PushAbility : MonoBehaviour, IAbility
 
     public void Activate(PlayerPhysics casterPhysics, Vector3 direction)
     {
-        if (!IsReady) return;
+        if (!IsReady)
+            return;
+
         lastActivationTime = Time.time;
+
+        // Reproducir partículas del empuje
+        if (pushParticles != null)
+            pushParticles.Play();
 
         Vector3 origin = aimSource.Muzzle != null
             ? aimSource.Muzzle.position
             : casterPhysics.transform.position;
 
-        if (Physics.SphereCast(origin, pushRadius, direction, out RaycastHit hit, range, affectedLayers))
+        if (Physics.SphereCast(
+            origin,
+            pushRadius,
+            direction,
+            out RaycastHit hit,
+            range,
+            affectedLayers))
         {
             // Nunca afectarse a sí mismo.
-            if (hit.collider.gameObject == casterPhysics.gameObject) return;
+            if (hit.collider.gameObject == casterPhysics.gameObject)
+                return;
 
             ApplyPush(hit.collider, direction);
         }
@@ -88,39 +102,57 @@ public class PushAbility : MonoBehaviour, IAbility
 
     private void ApplyPush(Collider target, Vector3 direction)
     {
-        // Caso 1: jugador o enemigo. Ambos pasan siempre por PlayerPhysics
-        // (EnemyController lo requiere igual que cualquier jugador), así que
-        // compañero, enemigo-contra-pared y enemigo-contra-enemigo quedan
-        // cubiertos por esta misma línea sin distinguir entre ellos.
+        // Caso 1: jugador o enemigo.
         if (target.TryGetComponent(out PlayerPhysics targetPhysics))
         {
             targetPhysics.ApplyImpulse(direction * pushForce);
-            BlackHole.GrantRepulsionImmunity(targetPhysics, blackHoleTraversalWindow);
+
+            BlackHole.GrantRepulsionImmunity(
+                targetPhysics,
+                blackHoleTraversalWindow
+            );
+
             return;
         }
 
-        // Caso 2: objeto genérico sin PlayerPhysics (caja, prop). Fallback simple
-        // mientras no exista un sistema de físicas propio para objetos del escenario.
+        // Caso 2: objeto genérico sin PlayerPhysics.
         if (target.TryGetComponent(out Rigidbody rb))
         {
-            rb.AddForce(direction * pushForce, ForceMode.Impulse);
+            rb.AddForce(
+                direction * pushForce,
+                ForceMode.Impulse
+            );
         }
     }
 
     private void OnDrawGizmosSelected()
     {
-        if (!showGizmo) return;
+        if (!showGizmo)
+            return;
 
         Vector3 origin = aimSource != null && aimSource.Muzzle != null
             ? aimSource.Muzzle.position
             : transform.position;
+
         Vector3 direction = aimSource != null
             ? (aimSource.AimPoint - origin).normalized
             : transform.right;
 
         Gizmos.color = new Color(1f, 0.5f, 0.1f, 0.6f);
-        Gizmos.DrawWireSphere(origin, pushRadius);
-        Gizmos.DrawLine(origin, origin + direction * range);
-        Gizmos.DrawWireSphere(origin + direction * range, pushRadius);
+
+        Gizmos.DrawWireSphere(
+            origin,
+            pushRadius
+        );
+
+        Gizmos.DrawLine(
+            origin,
+            origin + direction * range
+        );
+
+        Gizmos.DrawWireSphere(
+            origin + direction * range,
+            pushRadius
+        );
     }
 }
