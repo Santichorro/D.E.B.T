@@ -1253,7 +1253,6 @@ AudioSource:
     m_RotationOrder: 4
 --- !u!114 &507852762465201300
 MonoBehaviour:
-  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1273,8 +1272,6 @@ MonoBehaviour:
   usarColorDeGravityGun: 1
   colorFijo: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &9097742893781982646
-GameObject:
-  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
