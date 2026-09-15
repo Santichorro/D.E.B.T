@@ -272,6 +272,19 @@ public class GravityGun : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Libera el gancho solo si está sujetando el Rigidbody indicado.
+    /// Se usa cuando la carga se entrega para que la fuerza del gancho no siga actuando.
+    /// </summary>
+    public bool ForceReleaseIfAttachedTo(Rigidbody targetRigidbody)
+    {
+        if (!HasAttachedTarget || targetRigidbody == null || activeHook.TargetRb != targetRigidbody)
+            return false;
+
+        ForceReleaseHook();
+        return true;
+    }
+
     private void FixedUpdate()
     {
         if (activeHook == null)
