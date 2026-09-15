@@ -10279,6 +10279,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlackHole
       objectReference: {fileID: 0}
+    - target: {fileID: 681374109831572959, guid: beb9d0e3108cbb349bd8de7f1cd63e3b, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 681374109831572959, guid: beb9d0e3108cbb349bd8de7f1cd63e3b, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3422611572043499186, guid: beb9d0e3108cbb349bd8de7f1cd63e3b, type: 3}
       propertyPath: damagePerSecond
       value: 5
