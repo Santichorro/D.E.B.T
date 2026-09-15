@@ -492,6 +492,7 @@ GameObject:
   - component: {fileID: 456728686186493043}
   - component: {fileID: 4685935289351972152}
   - component: {fileID: 1265289406065864039}
+  - component: {fileID: 1820837232998003036}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -616,6 +617,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: a0293abb-6d3f-46bb-bcf9-c829bd0a0dc4
     m_ActionName: 'Player/Interact[/Keyboard/f,/DualShock4GamepadHID/buttonWest]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c5ff1eb2-d38c-426e-bf2e-b940681fe72a
+    m_ActionName: 'Player/RolChange[/Keyboard/tab]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 517f52de-c548-402a-a608-dc5fa0c1e383
+    m_ActionName: "Men\xFA/Pause[/Keyboard/escape]"
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -864,6 +873,8 @@ MonoBehaviour:
   showGizmo: 1
   visiblePulseObject: {fileID: 8547631025643287567}
   visualDuration: 1
+  audioSource: {fileID: 1820837232998003036}
+  pulseSound: {fileID: 8300000, guid: 85820a427474edd42a4ab0018552c3ab, type: 3}
 --- !u!114 &5853826892888558912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -901,6 +912,7 @@ MonoBehaviour:
   affectedLayers:
     serializedVersion: 2
     m_Bits: 136
+  blackHoleTraversalWindow: 2
   showGizmo: 1
 --- !u!114 &1797168195193372449
 MonoBehaviour:
@@ -916,6 +928,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PropulsionAbility
   propulsionForce: 8
   cooldown: 2.5
+  blackHoleTraversalWindow: 2
   guaranteedMinSpeed: 10
   collisionAttackWindow: 0.35
   minCollisionSpeed: 5
@@ -997,6 +1010,103 @@ MonoBehaviour:
   emissionSmoothSpeed: 10
   angleOffset: 0
   rotationSmoothSpeed: 200
+--- !u!82 &1820837232998003036
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7866151229289544535}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.43
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &9097742893781982646
 GameObject:
   m_ObjectHideFlags: 0

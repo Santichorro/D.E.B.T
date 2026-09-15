@@ -14,12 +14,21 @@ public class Door : MonoBehaviour
     [Tooltip("Distancia que cada hoja recorre hacia su eje local Z positivo al abrirse.")]
     [SerializeField] private float openDistance = 3f;
     [SerializeField] private float duration = 1f;
-    [SerializeField] private AnimationCurve smoothCurve =
+    [SerializeField]
+    private AnimationCurve smoothCurve =
         AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
     [Header("Al reactivarse el mecanismo")]
     [Tooltip("Si está activo, la puerta vuelve a cerrarse cuando ningún mecanismo hijo siga desactivado.")]
     [SerializeField] private bool closeWhenMechanismsReactivate = true;
+
+    [Header("Sonidos")]
+    [Tooltip("AudioSource que reproducirá los sonidos de apertura y cierre. Si se deja vacío, se buscará uno en este GameObject.")]
+    [SerializeField] private AudioSource audioSource;
+    [Tooltip("Sonido que se reproduce cuando la puerta empieza a abrirse.")]
+    [SerializeField] private AudioClip openSound;
+    [Tooltip("Sonido que se reproduce cuando la puerta empieza a cerrarse.")]
+    [SerializeField] private AudioClip closeSound;
 
     private Vector3[] closedLocalPositions;
     private Coroutine moveRoutine;
@@ -31,6 +40,9 @@ public class Door : MonoBehaviour
     {
         if (linkedMechanisms == null || linkedMechanisms.Length == 0)
             linkedMechanisms = GetComponentsInChildren<Mechanism>();
+
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
 
         closedLocalPositions = new Vector3[doorLeaves.Length];
         for (int i = 0; i < doorLeaves.Length; i++)
@@ -129,6 +141,7 @@ public class Door : MonoBehaviour
         if (isOpen) return;
 
         isOpen = true;
+        PlaySound(openSound);
         StartMove(open: true);
     }
 
@@ -137,7 +150,14 @@ public class Door : MonoBehaviour
         if (!isOpen) return;
 
         isOpen = false;
+        PlaySound(closeSound);
         StartMove(open: false);
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
     }
 
     private void StartMove(bool open)

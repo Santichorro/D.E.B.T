@@ -28,13 +28,22 @@ public class PulseAbility : MonoBehaviour, IAbility
     [SerializeField] private GameObject visiblePulseObject;
     [SerializeField] private float visualDuration = 1f;
 
-private Coroutine visualRoutine;
+    [Header("Sonido")]
+    [Tooltip("AudioSource que reproducirá el sonido del Pulso. Si se deja vacío, se buscará uno en este GameObject.")]
+    [SerializeField] private AudioSource audioSource;
+    [Tooltip("Sonido que se reproduce cada vez que se activa el Pulso.")]
+    [SerializeField] private AudioClip pulseSound;
+
+    private Coroutine visualRoutine;
 
     private void Awake()
     {
         physics = GetComponent<PlayerPhysics>();
         playerInput = GetComponent<PlayerInput>();
         inputActions = new NIS();
+
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
@@ -64,15 +73,17 @@ private Coroutine visualRoutine;
 
     public void Activate(PlayerPhysics casterPhysics, Vector3 direction)
     {
-        Debug.Log($"Activate llamado. IsReady={IsReady}"); 
+        Debug.Log($"Activate llamado. IsReady={IsReady}");
         if (!IsReady) return;
 
         lastActivationTime = Time.time;
 
+        PlaySound();
+
         Vector3 origin = casterPhysics.transform.position;
         if (visiblePulseObject != null)
         {
-        
+
             if (visualRoutine != null)
                 StopCoroutine(visualRoutine);
 
@@ -110,6 +121,12 @@ private Coroutine visualRoutine;
                 }
             }
         }
+    }
+
+    private void PlaySound()
+    {
+        if (audioSource != null && pulseSound != null)
+            audioSource.PlayOneShot(pulseSound);
     }
 
     private void OnDrawGizmosSelected()
