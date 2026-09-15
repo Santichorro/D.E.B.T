@@ -94,7 +94,7 @@ public class IntroLoreSequence : MonoBehaviour
         // Primero liberar a los jugadores que registramos
         foreach (var (controller, physics) in joinedPlayers)
         {
-            if (physics != null)
+            if (physics != null && physics.IsAnchored)
             {
                 physics.ReleaseAnchor();
             }
@@ -108,7 +108,8 @@ public class IntroLoreSequence : MonoBehaviour
         joinedPlayers.Clear();
 
         // Seguridad adicional:
-        // liberar TODOS los jugadores que existan actualmente.
+        // liberar TODOS los jugadores que existan actualmente,
+        // pero SOLO si de verdad están anclados.
         foreach (PlayerInput playerInput in PlayerInput.all)
         {
             if (playerInput == null)
@@ -117,7 +118,7 @@ public class IntroLoreSequence : MonoBehaviour
             var controller = playerInput.GetComponent<PlayerController>();
             var physics = playerInput.GetComponent<PlayerPhysics>();
 
-            if (physics != null)
+            if (physics != null && physics.IsAnchored)
             {
                 physics.ReleaseAnchor();
             }
