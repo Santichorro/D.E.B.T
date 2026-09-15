@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab207b38cc202854ca31800f6f153072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPhysics
-  maxSpeed: 6
+  maxSpeed: 8
   deceleration: 2
   stopThreshold: 0.05
   anchorWarningLead: 1.5
