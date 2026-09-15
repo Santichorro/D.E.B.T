@@ -8,6 +8,11 @@ public class GravityGun : MonoBehaviour
     public GravityHook hookPrefab;
     public Transform muzzle;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip fireSound;
+    [Range(0f, 1f)] public float fireVolume = 1f;
+
     [Header("Aim")]
     public Camera aimCamera;
 
@@ -208,6 +213,9 @@ public class GravityGun : MonoBehaviour
         GravityHook hook = Instantiate(hookPrefab, muzzle.position, Quaternion.identity);
         hook.Init(this, myRigidbody, dir);
         activeHook = hook;
+
+        if (audioSource != null && fireSound != null)
+            audioSource.PlayOneShot(fireSound, fireVolume);
     }
 
     private Vector3 GetAimDirection()
