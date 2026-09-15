@@ -39,6 +39,10 @@ public class ShipController : MonoBehaviour
 
         var gravityGun = player.GetComponent<GravityGun>();
         if (gravityGun != null) gravityGun.enabled = false;
+
+        // NUEVO: mientras pilotea, no debe seguir amarrado a la nave (ni tirón ni cable visible).
+        var tether = player.GetComponent<PlayerShipLine>();
+        if (tether != null) tether.SetTetherActivo(false);
     }
 
     public void ExitShip(Interactable player)
@@ -58,6 +62,10 @@ public class ShipController : MonoBehaviour
 
         var gravityGun = player.GetComponent<GravityGun>();
         if (gravityGun != null) gravityGun.enabled = true;
+
+        // NUEVO: al salir, se reactiva el tether con normalidad.
+        var tether = player.GetComponent<PlayerShipLine>();
+        if (tether != null) tether.SetTetherActivo(true);
 
         pilot.SetPiloting(null);
         pilot = null;
