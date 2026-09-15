@@ -9,7 +9,7 @@ public class IntroManager : MonoBehaviour
     [Header("Referencias UI")]
     [SerializeField] private CanvasGroup teamLogoGroup;
     [SerializeField] private CanvasGroup gameLogoGroup;
-    [SerializeField] private TextMeshProUGUI promptText;
+    [SerializeField] private CanvasGroup promptGroup; // CanvasGroup del "PromptContainer" (íconos + texto)
 
     [Header("Tiempos (segundos)")]
     [SerializeField] private float fadeInDuration = 1f;
@@ -28,7 +28,7 @@ public class IntroManager : MonoBehaviour
         // Estado inicial: todo invisible.
         teamLogoGroup.alpha = 0f;
         gameLogoGroup.alpha = 0f;
-        promptText.alpha = 0f;
+        promptGroup.alpha = 0f;
 
         StartCoroutine(SecuenciaIntro());
     }
@@ -66,7 +66,7 @@ public class IntroManager : MonoBehaviour
         {
             // Efecto de titileo con una onda seno (más suave que on/off)
             float alpha = (Mathf.Sin(Time.time / blinkSpeed * Mathf.PI) + 1f) / 2f;
-            promptText.alpha = alpha;
+            promptGroup.alpha = alpha; // Titila todo el contenedor: íconos + texto
             yield return null;
         }
     }
