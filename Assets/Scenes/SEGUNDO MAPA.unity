@@ -743,7 +743,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3422611572043499186, guid: beb9d0e3108cbb349bd8de7f1cd63e3b, type: 3}
       propertyPath: repulsionRadius
-      value: 5
+      value: 7.34
       objectReference: {fileID: 0}
     - target: {fileID: 3422611572043499186, guid: beb9d0e3108cbb349bd8de7f1cd63e3b, type: 3}
       propertyPath: planarDetectionHalfDepth
@@ -8673,15 +8673,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6938672480992643143, guid: f5886dc514edc16498e2f70163f9ce05, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 53.577976
+      value: 56.75
       objectReference: {fileID: 0}
     - target: {fileID: 6938672480992643143, guid: f5886dc514edc16498e2f70163f9ce05, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.01
+      value: 4.038
       objectReference: {fileID: 0}
     - target: {fileID: 6938672480992643143, guid: f5886dc514edc16498e2f70163f9ce05, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.07
+      value: -0.79
       objectReference: {fileID: 0}
     - target: {fileID: 6938672480992643143, guid: f5886dc514edc16498e2f70163f9ce05, type: 3}
       propertyPath: m_LocalRotation.w
