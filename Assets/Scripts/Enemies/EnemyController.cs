@@ -10,6 +10,7 @@ public class EnemyController : MonoBehaviour
     [Header("Objetivo: nave (prioridad por defecto)")]
     [Tooltip("Si lo dejás vacío, busca un objeto con tag 'Ship' apenas lo necesite.")]
     public Transform naveTransform;
+    public float shipAggroRange = 30f;
 
     [Header("Objetivo: jugador cercano (tiene prioridad sobre la nave)")]
     [Tooltip("Si un jugador está a esta distancia o menos, el enemigo lo persigue a él en vez de ir hacia la nave. Fuera de esta distancia, siempre va hacia la nave sin importar qué tan lejos esté.")]
@@ -66,10 +67,10 @@ public class EnemyController : MonoBehaviour
         Transform jugadorCercano = BuscarJugadorCercanoDentroDelRango();
         if (jugadorCercano != null) return jugadorCercano;
 
-        if (naveTransform == null)
-            BuscarNave();
+        if (naveTransform == null) return null;
 
-        return naveTransform; // Puede ser null si todavía no existe la nave en la escena.
+        float distNave = Vector3.Distance(transform.position, naveTransform.position);
+        return (distNave <= shipAggroRange) ? naveTransform : null;
     }
 
     private Transform BuscarJugadorCercanoDentroDelRango()
@@ -146,5 +147,11 @@ public class EnemyController : MonoBehaviour
     private void HandleDeath()
     {
         Destroy(gameObject);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, playerAggroRange);
     }
 }

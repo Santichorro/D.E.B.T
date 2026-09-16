@@ -25,6 +25,6 @@ public class ShipHealth : MonoBehaviour
     private void HandleShipDeath()
     {
         OnShipDestroyed?.Invoke();
-        Debug.Log("Nave destruida: el nivel debería reiniciarse aquí.");
+        Debug.Log("Nave destruida: el nivel deberia reiniciarse aqui.");
     }
 }

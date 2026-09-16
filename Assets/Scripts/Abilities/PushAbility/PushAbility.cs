@@ -23,6 +23,10 @@ public class PushAbility : MonoBehaviour, IAbility
     [Tooltip("Tiempo durante el cual el jugador empujado ignora la repulsión del agujero negro.")]
     [SerializeField, Min(0f)] private float blackHoleTraversalWindow = 2f;
 
+    [Header("Dirección")]
+    [Tooltip("Transform de la cabeza o visual que indica hacia dónde mira este jugador.")]
+    [SerializeField] private Transform headTransform;
+
     [Header("Debug")]
     [SerializeField] private bool showGizmo = true;
 
@@ -61,14 +65,23 @@ public class PushAbility : MonoBehaviour, IAbility
 
     private void OnAbilityInput(InputAction.CallbackContext ctx)
     {
-        Vector3 direction = aimSource.AimPoint - aimSource.Muzzle.position;
+        Activate(physics, GetPushDirection());
+    }
+
+    private Vector3 GetPushDirection()
+    {
+        Vector3 direction = headTransform != null ? headTransform.up : transform.up;
         direction.z = 0f;
 
-        // Fallback si el jugador aún no movió el aim en este frame.
         if (direction.sqrMagnitude < 0.0001f)
-            direction = transform.right;
+        {
+            direction = transform.up;
+            direction.z = 0f;
+        }
 
-        Activate(physics, direction.normalized);
+        return direction.sqrMagnitude < 0.0001f
+            ? Vector3.up
+            : direction.normalized;
     }
 
     private Coroutine visualRoutine;
@@ -153,9 +166,7 @@ public class PushAbility : MonoBehaviour, IAbility
             ? aimSource.Muzzle.position
             : transform.position;
 
-        Vector3 direction = aimSource != null
-            ? (aimSource.AimPoint - origin).normalized
-            : transform.right;
+        Vector3 direction = GetPushDirection();
 
         Gizmos.color = new Color(1f, 0.5f, 0.1f, 0.6f);
 

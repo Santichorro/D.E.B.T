@@ -18454,17 +18454,17 @@ MonoBehaviour:
   enemyPrefab: {fileID: 6049655813640392701, guid: f4b02560339021d46a9f6384fce23b35, type: 3}
   spawnPoints:
   - {fileID: 392236345}
+  - {fileID: 832056749}
+  - {fileID: 517468719}
+  - {fileID: 1454190121}
+  - {fileID: 924295607}
   - {fileID: 1745140097}
   - {fileID: 1302873597}
-  - {fileID: 1302873597}
-  - {fileID: 1302873597}
-  - {fileID: 1302873597}
-  - {fileID: 1302873597}
-  - {fileID: 1302873597}
-  enemiesPerWave: 5
-  spawnInterval: 4
+  - {fileID: 392236345}
+  enemiesPerWave: 7
+  spawnInterval: 1
   autoStart: 1
-  autoStartDelay: 4
+  autoStartDelay: 1
 --- !u!1001 &1205785884
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27585,7 +27585,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!225 &1730341251
 CanvasGroup:
   m_ObjectHideFlags: 0
