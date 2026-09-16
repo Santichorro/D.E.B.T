@@ -131,11 +131,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   moveForce: 2
   naveTransform: {fileID: 0}
-  playerAggroRange: 8
+  shipAggroRange: 5
+  playerAggroRange: 5
   collisionDamage: 15
   damageCooldown: 1
   minImpactSpeed: 2
   impactDamageMultiplier: 10
+  throwDamageWindow: 2
 --- !u!114 &1858268314937824081
 MonoBehaviour:
   m_ObjectHideFlags: 0

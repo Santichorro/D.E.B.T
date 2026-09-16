@@ -27,9 +27,9 @@ public class BlackHole : MonoBehaviour
     [SerializeField] private AnimationCurve forceByProximity = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
     [Header("Desactivación cooperativa")]
-    [Tooltip("Los dos activadores que deben recibir Interact casi al mismo tiempo para apagar este agujero negro.")]
+    [Tooltip("Los activadores que deben recibir Interact casi al mismo tiempo (todos ellos) para apagar este agujero negro.")]
     [SerializeField] private BlackHoleDeactivator[] deactivationSwitches = new BlackHoleDeactivator[2];
-    [Tooltip("Diferencia máxima entre las interacciones de ambos activadores.")]
+    [Tooltip("Diferencia máxima entre la primera y la última interacción de todos los activadores.")]
     [SerializeField, Min(0.01f)] private float simultaneousDeactivationWindow = 0.5f;
     [SerializeField] private bool requireDifferentPlayers = true;
     [SerializeField] private bool hideVisualWhenDeactivated = true;
@@ -42,6 +42,7 @@ public class BlackHole : MonoBehaviour
     private Action<BlackHoleDeactivator, PlayerInput>[] deactivationHandlers;
     private Renderer[] visualRenderers;
     private bool isSubscribedToDeactivationSwitches;
+    private HashSet<int> distinctPlayerIdScratch;
 
     public bool IsDeactivated { get; private set; }
     public event Action OnDeactivated;
@@ -218,23 +219,33 @@ public class BlackHole : MonoBehaviour
 
     private void TryDeactivateWhenSwitchesMatch()
     {
-        if (deactivationSwitches == null || deactivationSwitches.Length != 2)
+        if (deactivationSwitches == null || deactivationSwitches.Length == 0)
             return;
 
         float earliestActivation = float.MaxValue;
         float latestActivation = float.MinValue;
 
+        if (requireDifferentPlayers)
+        {
+            distinctPlayerIdScratch ??= new HashSet<int>();
+            distinctPlayerIdScratch.Clear();
+        }
+
         for (int i = 0; i < deactivationSwitches.Length; i++)
         {
             if (deactivationSwitches[i] == null || deactivationTimes[i] < 0f)
-                return;
+                return; // todavía falta algún activador por dispararse
 
             earliestActivation = Mathf.Min(earliestActivation, deactivationTimes[i]);
             latestActivation = Mathf.Max(latestActivation, deactivationTimes[i]);
+
+            if (requireDifferentPlayers)
+                distinctPlayerIdScratch.Add(deactivationPlayerIds[i]);
         }
 
         bool withinWindow = latestActivation - earliestActivation <= simultaneousDeactivationWindow;
-        bool differentPlayers = !requireDifferentPlayers || deactivationPlayerIds[0] != deactivationPlayerIds[1];
+        bool differentPlayers = !requireDifferentPlayers
+            || distinctPlayerIdScratch.Count == deactivationSwitches.Length;
 
         if (withinWindow && differentPlayers)
             Deactivate();
