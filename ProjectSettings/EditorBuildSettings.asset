@@ -6,9 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Movimiento.unity
-    guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
     path: Assets/Scenes/Escena_Intro.unity
     guid: 0f1c638d5fd19214898d0f0d60e08678
   - enabled: 1
@@ -17,9 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SEGUNDO NIVEL.unity
     guid: 4f65291314588474caf47e8866da0642
-  - enabled: 0
-    path: Assets/Scenes/MAPA MK1.unity
-    guid: 7b533dfe561bc47c8975c955fe4ef3d3
+  - enabled: 1
+    path: Assets/Scenes/PANTALLA FINAL.unity
+    guid: b417c57f83c35a445b75baa4d17e83b4
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
